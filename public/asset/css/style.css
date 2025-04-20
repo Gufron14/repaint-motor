@@ -1,0 +1,53 @@
+.nav-link {
+    color: white !important; /* Warna teks default untuk semua nav-link */
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.3s ease-in-out;
+}
+
+.nav-link:hover {
+    color: #f0a500 !important; /* Warna saat hover */
+}
+
+.nav-link.active {
+    color: #ffffff !important; /* Warna untuk menu aktif */
+    font-weight: 700;
+    border-bottom: 2px solid #f0a500; /* Highlight bawah menu aktif */
+}
+
+/* Untuk memastikan tidak ada warna bawaan dari <a> */
+a {
+    color: inherit; /* Mengambil warna dari elemen induk */
+    text-decoration: none; /* Hilangkan garis bawah */
+}
+
+.min-h-screen {
+    min-height: 90vh;
+}
+
+.whatsapp-button {
+    position: fixed;
+    bottom: 100px;
+    right: 100px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    background-color: #25d366;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s ease-in-out;
+}
+
+.whatsapp-button:hover {
+    background-color: #1ebe5d;
+    color: white;
+}
+
+.whatsapp-button i {
+    font-size: 24px;
+    margin-right: 10px;
+}
