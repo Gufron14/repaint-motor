@@ -34,8 +34,8 @@ class RoleAndPermissionSeeder extends Seeder
 
         // Assign Permission ke Role User
         $roleUser->givePermissionTo([
-            'reservasi',
-            'riwayat-reservasi',
+            'create.reservation',
+            'view.own.reservation',
         ]);
     }
 }

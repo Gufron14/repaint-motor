@@ -5,6 +5,7 @@ use App\Models\JenisRepaint;
 use App\Models\MotorRepaint;
 use App\Models\KategoriMotor;
 use Illuminate\Database\Seeder;
+use Database\Seeders\UserSeeder;
 use Database\Seeders\AdminSeeder;
 use Database\Seeders\RoleAndPermissionSeeder;
 
@@ -12,6 +13,12 @@ class DatabaseSeeder extends Seeder
 {
     public function run()
     {   
+        // Jalankan RoleAndPermissionSeeder terlebih dahulu
+        // agar role dan permission sudah tersedia saat membuat user
+        $this->call(RoleAndPermissionSeeder::class);
+        
+        // Kemudian jalankan UserSeeder
+        $this->call(UserSeeder::class);
 
         // $this->call([
         //     RoleAndPermissionSeeder::class,
