@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('portfolios', function (Blueprint $table) {
             $table->id();
-            $table->string('image');
+            // $table->string('image');
+            $table->string('type')->default('image');
+            $table->string('media');
             $table->timestamps();
         });
     }
