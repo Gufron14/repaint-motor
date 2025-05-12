@@ -48,6 +48,8 @@
 
     @include('livewire.admin.components.script')
     @livewireScripts
+
+    @stack('scripts')
 </body>
 
 </html>

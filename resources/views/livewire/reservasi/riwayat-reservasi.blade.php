@@ -12,65 +12,74 @@
     <h3 class="fw-bold mb-5 text-center">Riwayat Reservasi</h3>
 
     @forelse ($reservasi as $index => $item)
-        <div class="card mb-3 p-3">
+        <div class="card mx-auto mb-3 p-3 w-75">
             <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div class="col-8">
-                        <h3 class="fw-bold mb-3">
-                            <span class="badge me-2 text-bg-warning">{{ $item->kategoriMotor->nama_kategori }}</span>
+                <div class="mb-4">
+                    @if ($item->status == 'pending')
+                    @elseif ($item->status == 'setuju')
+                        <div class="d-flex align-items-center alert alert-warning mt-2">
+                            <div class="me-2 fs-5">
+                                <i class="bi bi-check2-circle me-2"></i>
+                            </div>
+                            <div class="">
+                                Reservasi Anda disetujui, silakan bawa motor anda ke alamat bengkel yang tertera
+                                untuk dilakukan Repaint.
+                            </div>
+                        </div>
+                    @elseif ($item->status == 'tolak')
+                        <div class="d-flex align-items-center alert alert-danger mt-2">
+                            <div class="me-2 fs-5">
+                                <i class="bi bi-x-lg"></i>
+                            </div>
+                            <div class="">
+                                Reservasi Anda Ditolak
+                            </div>
+                        </div>
+                    @elseif ($item->status == 'batal')
+                        <div class="d-flex align-items-center alert alert-danger mt-2">
+                            <div class="me-2 fs-5">
+                                <i class="bi bi-x-lg"></i>
+                            </div>
+                            <div class="">
+                                Reservasi Anda Dibatalkan
+                            </div>
+                        </div>
+                    @elseif ($item->status == 'selesai')
+                        <div class="d-flex align-items-center alert alert-success mt-2">
+                            <div class="me-2 fs-5">
+                                <i class="bi bi-check2-circle"></i>
+                            </div>
+                            <div class="">
+                                Motor anda Sudah selesai di Repaint, Silakan ambil Motor anda.
+                            </div>
+                        </div>
+                    @else
+                        {{-- Keep existing status badges for other statuses --}}
+                        {{-- @include('existing-status-badges') --}}
+                    @endif
+                </div>
+                <div class="d-flex align-items-center justify-content-between mb-3 p-2">
+                    <div class="d-flex align-items-center flex-wrap">
+                        <span class="badge me-2 text-bg-warning fs-5">
+                            {{ $item->kategoriMotor->nama_kategori }}
+                        </span>
+                        <h4 class="mb-0 fw-bold">
                             {{ $item->tipeMotor->nama_motor }}:
                             @if (is_array($item->jenisRepaint) && count($item->jenisRepaint) > 0)
                                 {{ implode(', ', $item->jenisRepaint) }}
                             @else
                                 Data tidak tersedia
                             @endif
-                        </h3>
+                        </h4>
                     </div>
-                    <div class="col">
-                        @if ($item->status == 'pending')
-                        @elseif ($item->status == 'setuju')
-                            <div class="d-flex align-items-center alert alert-warning mt-2">
-                                <div class="fs-1 me-3">
-                                    <i class="bi bi-check2-circle me-2"></i>
-                                </div>
-                                <div class="">
-                                    Reservasi Anda disetujui, silakan bawa motor anda ke alamat bengkel yang tertera
-                                    untuk dilakukan Repaint,
-                                </div>
-                            </div>
-                        @elseif ($item->status == 'tolak')
-                            <div class="d-flex align-items-center alert alert-danger mt-2">
-                                <div class="fs-1 me-3">
-                                    <i class="bi bi-x-lg"></i>
-                                </div>
-                                <div class="">
-                                    Reservasi Anda Ditolak karena
-                                </div>
-                            </div>
-                        @elseif ($item->status == 'batal')
-                            <div class="d-flex align-items-center alert alert-danger mt-2">
-                                <div class="fs-1 me-3">
-                                    <i class="bi bi-x-lg"></i>
-                                </div>
-                                <div class="">
-                                    Reservasi Anda Dibatalkan karena
-                                </div>
-                            </div>
-                        @elseif ($item->status == 'selesai')
-                            <div class="d-flex align-items-center alert alert-success mt-2">
-                                <div class="fs-1 me-3">
-                                    <i class="bi bi-check2-circle"></i>
-                                </div>
-                                <div class="">
-                                    Motor anda Sudah selesai di Repaint, Silakan ambil Motor anda.
-                                </div>
-                            </div>
-                        @else
-                            {{-- Keep existing status badges for other statuses --}}
-                            {{-- @include('existing-status-badges') --}}
-                        @endif
+                    <div class="d-flex align-items-center">
+                        <span class="me-1">Nomor Polisi:</span>
+                        <span class="badge text-bg-info fs-6">
+                            {{ $item->nomor_polisi }}
+                        </span>
                     </div>
                 </div>
+                
                 <div class="d-flex align-items-center gap-5">
                     <div class="col">
                         <table class="table table-borderless table-sm" width="50%">
@@ -101,7 +110,11 @@
                             <tr>
                                 <td>Estimasi Waktu</td>
                                 <td>:</td>
-                                <td class="fw-bold text-success">{{ $item->estimasi_waktu }} hari</td>
+                                <td class="fw-bold text-success">
+                                    {{ $item->estimasi_waktu }} hari
+                                    <br>
+                                    <small>({{ \Carbon\Carbon::parse($item->created_at)->addDays($item->estimasi_waktu)->locale('id')->isoFormat('dddd, D MMMM Y') }})</small>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Bukti Bayar</td>
@@ -121,6 +134,8 @@
                             </tr>
                         </table>
                     </div>
+                    
+                    {{-- Status --}}
                     <div class="col-3">
                         <div class="mb-3">
                             <div>Status Pembayaran:</div>
@@ -132,8 +147,6 @@
                                 <span class="badge text-bg-warning fs-6">Belum Bayar</span>
                             @endif
                         </div>
-                        
-
                         <div>
                             <div>Status Pengerjaan:</div>
                             @if ($item->status == 'pending')
@@ -169,27 +182,31 @@
                         <small class="text-danger">{{ $item->updated_at->format('d/m/Y H:i') }}</small>
 
                     </div>
-                    <div class="col-3">
-                        @if ($item->status == 'pending')
+                </div>
+
+                {{-- Button --}}
+                <div class="mt-5 float-end">
+                    @if ($item->status == 'pending')
+                        <div class="d-flex gap-2">
                             <button wire:click="batalkanReservasi({{ $item->id }})"
-                                class="btn btn-danger fw-bold w-100"
+                                class="btn btn-danger fw-bold"
                                 onclick="return confirm('Yakin ingin membatalkan reservasi?')">
                                 Batalkan Reservasi
                             </button>
                             
                             @if(!$item->payment || !$item->payment->bukti_pembayaran)
-                                <button class="btn fw-bold btn-success w-100 mt-2" data-bs-toggle="modal"
+                                <button class="btn fw-bold btn-success" data-bs-toggle="modal"
                                     data-bs-target="#modalPembayaran{{ $item->id }}">Bayar Sekarang</button>
                             @endif
-                        @else
-                            <button wire:click="batalkanReservasi({{ $item->id }})"
-                                class="btn btn-danger fw-bold w-100"
-                                onclick="return confirm('Yakin ingin membatalkan reservasi?')" disabled>
-                                Batalkan Reservasi
-                            </button>
-                        @endif
-                    </div>                    
-                </div>
+                        </div>
+                    @else
+                        <button wire:click="batalkanReservasi({{ $item->id }})"
+                            class="btn btn-danger fw-bold"
+                            onclick="return confirm('Yakin ingin membatalkan reservasi?')" disabled>
+                            Batalkan Reservasi
+                        </button>
+                    @endif
+                </div>                    
             </div>
         </div>
 

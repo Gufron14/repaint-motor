@@ -19,6 +19,9 @@ return new class extends Migration
             $table->json('jenis_repaint_id')->constrained()->onDelete('cascade'); // Relasi ke jenis repaint
             $table->string('warna_body', 7)->nullable();
             $table->string('warna_velg', 7)->nullable();
+            $table->string('foto_motor');
+            $table->string('foto_velg')->nullable();
+            $table->string('nomor_polisi');
             $table->string('catatan');
             $table->decimal('total_harga', 10, 2); // Total harga yang dihitung
             $table->integer('estimasi_waktu'); // Estimasi waktu pengerjaan (dalam hari)

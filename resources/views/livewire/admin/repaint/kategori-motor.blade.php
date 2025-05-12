@@ -4,7 +4,7 @@
             {{ session('success') }}
         </div>
     @endif
-    <h3 class="fw-bold mb-3">Daftar Kategori</h3>
+    <h3 class="fw-bold mb-3">Kelola Kategori Motor</h3>
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-4">

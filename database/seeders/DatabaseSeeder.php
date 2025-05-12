@@ -31,8 +31,8 @@ class DatabaseSeeder extends Seeder
                 'tipe_motor' => ['Supra X', 'Vega ZR', 'Jupiter Z'],
                 'jenis_repaint' => [
                     ['nama' => 'Full Body', 'harga' => 700000, 'estimasi' => '7 hari'],
-                    ['nama' => 'Body Halus', 'harga' => 500000, 'estimasi' => '4 hari'],
-                    ['nama' => 'Body Kasar', 'harga' => 200000, 'estimasi' => '2 hari'],
+                    ['nama' => 'Body Halus', 'harga' => 500000, 'estimasi' => '5 hari'],
+                    ['nama' => 'Body Kasar', 'harga' => 200000, 'estimasi' => '5 hari'],
                     ['nama' => 'Velg', 'harga' => 250000, 'estimasi' => '1 hari'],
                 ]
             ],
@@ -56,8 +56,8 @@ class DatabaseSeeder extends Seeder
                 'tipe_motor' => ['Vixion', 'CB 150 R', 'CBR 150'],
                 'jenis_repaint' => [
                     ['nama' => 'Full Body', 'harga' => 850000, 'estimasi' => '7 hari'],
-                    ['nama' => 'Body Halus', 'harga' => 600000, 'estimasi' => '4 hari'],
-                    ['nama' => 'Body Kasar', 'harga' => 250000, 'estimasi' => '2 hari'],
+                    ['nama' => 'Body Halus', 'harga' => 600000, 'estimasi' => '5 hari'],
+                    ['nama' => 'Body Kasar', 'harga' => 250000, 'estimasi' => '5 hari'],
                     ['nama' => 'Velg', 'harga' => 350000, 'estimasi' => '1 hari'],
                 ]
             ],
@@ -65,8 +65,8 @@ class DatabaseSeeder extends Seeder
                 'tipe_motor' => ['R15', 'R25'],
                 'jenis_repaint' => [
                     ['nama' => 'Full Body', 'harga' => 1000000, 'estimasi' => '7 hari'],
-                    ['nama' => 'Body Halus', 'harga' => 750000, 'estimasi' => '4 hari'],
-                    ['nama' => 'Body Kasar', 'harga' => 250000, 'estimasi' => '2 hari'],
+                    ['nama' => 'Body Halus', 'harga' => 750000, 'estimasi' => '5 hari'],
+                    ['nama' => 'Body Kasar', 'harga' => 250000, 'estimasi' => '5 hari'],
                     ['nama' => 'Velg', 'harga' => 350000, 'estimasi' => '1 hari'],
                 ]
             ],
@@ -76,8 +76,8 @@ class DatabaseSeeder extends Seeder
                 ],
                 'jenis_repaint' => [
                     ['nama' => 'Full Body', 'harga' => 600000, 'estimasi' => '7 hari'],
-                    ['nama' => 'Body Halus', 'harga' => 350000, 'estimasi' => '4 hari'],
-                    ['nama' => 'Body Kasar', 'harga' => 250000, 'estimasi' => '2 hari'],
+                    ['nama' => 'Body Halus', 'harga' => 350000, 'estimasi' => '5 hari'],
+                    ['nama' => 'Body Kasar', 'harga' => 250000, 'estimasi' => '5 hari'],
                     ['nama' => 'Velg', 'harga' => 250000, 'estimasi' => '1 hari'],
                 ]
             ],
@@ -87,8 +87,8 @@ class DatabaseSeeder extends Seeder
                 ],
                 'jenis_repaint' => [
                     ['nama' => 'Full Body', 'harga' => 950000, 'estimasi' => '7 hari'],
-                    ['nama' => 'Body Halus', 'harga' => 700000, 'estimasi' => '4 hari'],
-                    ['nama' => 'Body Kasar', 'harga' => 250000, 'estimasi' => '2 hari'],
+                    ['nama' => 'Body Halus', 'harga' => 700000, 'estimasi' => '5 hari'],
+                    ['nama' => 'Body Kasar', 'harga' => 250000, 'estimasi' => '5 hari'],
                     ['nama' => 'Velg', 'harga' => 250000, 'estimasi' => '1 hari'],
                 ]
             ],
@@ -96,8 +96,8 @@ class DatabaseSeeder extends Seeder
                 'tipe_motor' => ['N-Max', 'Vario 160', 'PCX 150 Old', 'PCX 160'],
                 'jenis_repaint' => [
                     ['nama' => 'Full Body', 'harga' => 1300000, 'estimasi' => '7 hari'],
-                    ['nama' => 'Body Halus', 'harga' => 1000000, 'estimasi' => '4 hari'],
-                    ['nama' => 'Body Kasar', 'harga' => 300000, 'estimasi' => '2 hari'],
+                    ['nama' => 'Body Halus', 'harga' => 1000000, 'estimasi' => '5 hari'],
+                    ['nama' => 'Body Kasar', 'harga' => 300000, 'estimasi' => '5 hari'],
                     ['nama' => 'Velg', 'harga' => 250000, 'estimasi' => '1 hari'],
                 ]
             ],
@@ -105,8 +105,8 @@ class DatabaseSeeder extends Seeder
                 'tipe_motor' => ['Scoopy Old', 'Scoopy New', 'Genio', 'Fazio', 'Filano'],
                 'jenis_repaint' => [
                     ['nama' => 'Full Body', 'harga' => 1250000, 'estimasi' => '7 hari'],
-                    ['nama' => 'Body Halus', 'harga' => 1000000, 'estimasi' => '4 hari'],
-                    ['nama' => 'Body Kasar', 'harga' => 250000, 'estimasi' => '2 hari'],
+                    ['nama' => 'Body Halus', 'harga' => 1000000, 'estimasi' => '5 hari'],
+                    ['nama' => 'Body Kasar', 'harga' => 250000, 'estimasi' => '5 hari'],
                     ['nama' => 'Velg', 'harga' => 250000, 'estimasi' => '1 hari'],
                 ]
             ]

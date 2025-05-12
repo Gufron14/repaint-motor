@@ -27,8 +27,8 @@ a {
 
 .whatsapp-button {
     position: fixed;
-    bottom: 100px;
-    right: 100px;
+    bottom: 50px;
+    right: 50px;
     z-index: 1000;
     display: flex;
     align-items: center;

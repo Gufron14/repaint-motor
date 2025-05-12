@@ -30,32 +30,62 @@ class HargaRepaint extends Component
     {
         $query = MotorRepaint::query()
             ->with(['tipeMotor.kategoriMotor', 'jenisRepaint']);
-
+    
         if ($this->search) {
             $query->whereHas('tipeMotor', function($q) {
                 $q->where('nama_motor', 'like', '%' . $this->search . '%');
             });
         }
-
+    
         if ($this->kategori_id) {
             $query->whereHas('tipeMotor', function($q) {
                 $q->where('kategori_motor_id', $this->kategori_id);
             });
         }
-
+    
+        // Ambil semua jenis repaint yang tersedia
+        $jenisRepaints = JenisRepaint::all();
+        $totalJenisRepaint = $jenisRepaints->count();
+        
+        // Ambil semua tipe motor
+        $allTipeMotors = TipeMotor::all();
+        
+        // Filter tipe motor yang belum memiliki semua jenis repaint
+        $filteredTipeMotors = $allTipeMotors->filter(function($tipeMotor) use ($totalJenisRepaint) {
+            $existingRepaintCount = MotorRepaint::where('tipe_motor_id', $tipeMotor->id)->count();
+            return $existingRepaintCount < $totalJenisRepaint;
+        });
+        
         return view('livewire.admin.repaint.harga-repaint', [
             'motorRepaints' => $query->paginate(10),
             'kategoriMotors' => KategoriMotor::all(),
-            'tipeMotors' => TipeMotor::all(),
-            'jenisRepaints' => JenisRepaint::all()
+            'tipeMotors' => $filteredTipeMotors,
+            'jenisRepaints' => $jenisRepaints
         ]);
     }
+    
 
     public function create()
     {
         $this->resetInputFields();
         $this->openModal();
     }
+
+    public function updatedTipeMotorId()
+{
+    if (!$this->tipe_motor_id) {
+        return;
+    }
+    
+    // Ambil jenis repaint yang sudah dimiliki oleh tipe motor ini
+    $existingRepaintIds = MotorRepaint::where('tipe_motor_id', $this->tipe_motor_id)
+        ->pluck('jenis_repaint_id')
+        ->toArray();
+    
+    // Filter jenis repaint yang belum dimiliki
+    $this->availableJenisRepaints = JenisRepaint::whereNotIn('id', $existingRepaintIds)->get();
+}
+
 
     public function store()
     {
