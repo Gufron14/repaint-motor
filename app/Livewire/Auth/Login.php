@@ -20,19 +20,30 @@ class Login extends Component
     public function login()
     {
         $this->validate();
-
-        if(Auth::attempt(['email' => $this->email, 'password' => $this->password])) {
+    
+        // Cek apakah email ada di database
+        $user = \App\Models\User::where('email', $this->email)->first();
+        
+        if (!$user) {
+            session()->flash('error', 'Email tidak terdaftar');
+            return;
+        }
+        
+        // Jika email ada, cek password
+        if (Auth::attempt(['email' => $this->email, 'password' => $this->password])) {
             $user = Auth::user();
             
-            if($user->hasRole('admin')) {
+            if ($user->hasRole('admin')) {
                 return redirect()->route('admin.dashboard');
             } else {
                 return redirect()->route('reservasi');
             }
+        } else {
+            // Jika email benar tapi password salah
+            session()->flash('error', 'Password yang Anda masukkan salah');
         }
-
-        session()->flash('error', 'Email atau password salah');
     }
+    
 
     public function render()
     {

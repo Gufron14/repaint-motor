@@ -39,12 +39,19 @@
 
             </ul>
 
-            <div class="text-end">
+            <div class="text-end d-flex gap-3">
                 @guest
                     <!-- Jika user belum login, tampilkan tombol Login dan Daftar -->
                     <a href="{{ route('login') }}" class="btn btn-outline-light me-2 fw-bold">Login</a>
                     <a href="{{ route('register') }}" class="btn btn-warning fw-bold">Daftar</a>
                 @else
+                <!--
+                     Jika user sudah login, tampilkan tombol Logout --> 
+                     @role('admin')
+                        <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-light">Panel Admin</a>
+                     @endrole
+                 
+
                     <!-- Jika user sudah login, tampilkan tombol Logout -->
                     <li class="nav nav-item dropdown">
                         <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">

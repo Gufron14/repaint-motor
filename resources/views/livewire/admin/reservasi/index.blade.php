@@ -14,10 +14,8 @@
                     <th>Nama Customer</th>
                     <th>Reservasi</th>
                     <th colspan="2">Warna</th>
-                    <th>Total Harga</th>
                     <th>Status Proses</th>
                     <th>Status Pembayaran</th>
-                    <th>Catatan</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -52,7 +50,6 @@
                                 {{ $item->warna_velg }}</td>
                         @endif
 
-                        <td class="align-middle">Rp{{ number_format($item->total_harga, 0, ',', '.') }}</td>
                         <td class="align-middle">
                             @if ($item->status == 'pending')
                                 <span class="badge text-bg-secondary ">Menunggu Persetujuan</span>
@@ -85,16 +82,14 @@
                         <td class="align-middle">
                             @if ($item->payment && $item->payment->bukti_pembayaran)
                                 <span class="badge text-bg-success">Sudah Bayar</span>
-                                <a href="" data-bs-toggle="modal" data-bs-target="#imageModal{{ $item->id }}">Lihat Bukti</a>
+                                <a href="" data-bs-toggle="modal"
+                                    data-bs-target="#imageModal{{ $item->id }}">Lihat Bukti</a>
                                 <br>
                             @else
                                 <span class="badge text-bg-warning">Belum Bayar</span>
                             @endif
                         </td>
-                        <td class="align-middle">
-                            <small>{{ $item->catatan }}</small>
-                        </td>
-                        <td>
+                        <td class="d-flex gap-2 justify-content-center align-items-center">
                             <div class="dropdown">
                                 <button class="btn btn-sm btn-primary fw-bold dropdown-toggle" type="button"
                                     data-bs-toggle="dropdown"
@@ -154,30 +149,39 @@
                                     @endif
                                 </ul>
                             </div>
+                            <div>
+                                <a href="{{ route('admin.reservasi.view', ['id' => $item->id]) }}"
+                                        class="btn btn-sm btn-warning">
+                                        <i class="fas fa-eye"></i>
+                                </a>
+                            </div>
                         </td>
                     </tr>
 
-{{-- Gambar bukti_pembayaran --}}
-<div class="modal fade" id="imageModal{{ $item->id }}" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="imageModalLabel">Bukti Pembayaran</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center">
-                @if($item->payment && $item->payment->bukti_pembayaran)
-                    <img src="{{ Storage::url($item->payment->bukti_pembayaran) }}" class="img-fluid" alt="Bukti Pembayaran">
-                @else
-                    <div class="alert alert-warning">
-                        <i class="bi bi-exclamation-triangle me-2"></i>
-                        Bukti pembayaran belum tersedia karena belum melakukan pembayaran
+                    {{-- Gambar bukti_pembayaran --}}
+                    <div class="modal fade" id="imageModal{{ $item->id }}" tabindex="-1"
+                        aria-labelledby="imageModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="imageModalLabel">Bukti Pembayaran</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    @if ($item->payment && $item->payment->bukti_pembayaran)
+                                        <img src="{{ Storage::url($item->payment->bukti_pembayaran) }}"
+                                            class="img-fluid" alt="Bukti Pembayaran">
+                                    @else
+                                        <div class="alert alert-warning">
+                                            <i class="bi bi-exclamation-triangle me-2"></i>
+                                            Bukti pembayaran belum tersedia karena belum melakukan pembayaran
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                @endif
-            </div>
-        </div>
-    </div>
-</div>
 
                 @empty
                     <tr>

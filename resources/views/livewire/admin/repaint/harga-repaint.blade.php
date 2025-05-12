@@ -1,5 +1,5 @@
 <div class="container-fluid">
-    <h3 class="fw-bold mb-3">Daftar Harga Repaint</h3>
+    <h3 class="fw-bold mb-3">Kelola Harga Repaint</h3>
     <div class="row mb-3">
         <div class="col-md-12">
             <div class="card">
@@ -128,11 +128,12 @@
                         <div class="mb-3">
                             <label class="form-label">Jenis Repaint</label>
                             <select wire:model="jenis_repaint_id" class="form-select">
-                                <option value="">Pilih Jenis</option>
-                                @foreach($jenisRepaints as $jenis)
-                                    <option value="{{ $jenis->id }}">{{ $jenis->nama_repaint }}</option>
+                                <option value="">Pilih Jenis Repaint</option>
+                                @foreach($availableJenisRepaints ?? $jenisRepaints as $repaint)
+                                    <option value="{{ $repaint->id }}">{{ $repaint->nama_repaint }}</option>
                                 @endforeach
                             </select>
+                            
                             {{-- @error('jenis_repaint_id') <span class="text-danger">{{ $message }}</span> @enderror --}}
                         </div>
                         <div class="mb-3">

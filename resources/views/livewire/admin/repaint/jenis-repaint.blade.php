@@ -1,5 +1,5 @@
 <div class="container-fluid">
-    <h3 class="fw-bold mb-3">Daftar Jenis Repaint</h3>
+    <h3 class="fw-bold mb-3">Kelola Jenis Repaint</h3>
     <div class="row">
         <div class="col-md-4">
             <div class="card">
