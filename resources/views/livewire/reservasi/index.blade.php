@@ -159,8 +159,9 @@
                 </div>
             </div>
         </div>
-    </div> --}}
+    </div> --}} 
 
+    
     {{-- modal Pembayaran --}}
     <div wire:ignore.self class="modal fade" id="modalPembayaran" data-bs-backdrop="static" tabindex="-1">
         <div class="modal-dialog">

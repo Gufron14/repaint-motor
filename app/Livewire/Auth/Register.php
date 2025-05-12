@@ -36,7 +36,7 @@ class Register extends Component
         // Assign role user (customer) secara default
         $user->assignRole('user');
 
-        // Auth::login($user);
+        // Auth::login($user);  
 
         return redirect()->route('login');
     }

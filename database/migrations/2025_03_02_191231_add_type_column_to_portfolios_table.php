@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::table('portfolios', function (Blueprint $table) {
             $table->string('type')->default('image');
-            $table->renameColumn('image', 'media');
+            $table->renameColumn('image', 'media'); 
         });
     }
 
