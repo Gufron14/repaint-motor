@@ -277,59 +277,59 @@ class Index extends Component
         }
     }
 
-    // public function createSnapToken($reservasi)
-    // {
-    //     try {
-    //         $user = Auth::user();
+    public function createSnapToken($reservasi)
+    {
+        try {
+            $user = Auth::user();
 
-    //         // Make sure Midtrans is properly configured
-    //         \Midtrans\Config::$serverKey = config('midtrans.server_key');
-    //         \Midtrans\Config::$isProduction = (bool) config('midtrans.is_production');
-    //         \Midtrans\Config::$isSanitized = true;
-    //         \Midtrans\Config::$is3ds = true;
+            // Make sure Midtrans is properly configured
+            \Midtrans\Config::$serverKey = config('midtrans.server_key');
+            \Midtrans\Config::$isProduction = (bool) config('midtrans.is_production');
+            \Midtrans\Config::$isSanitized = true;
+            \Midtrans\Config::$is3ds = true;
 
-    //         $transaction_details = [
-    //             'order_id' => 'REPAINT-' . $reservasi->id . '-' . time(),
-    //             'gross_amount' => (int) $this->totalHarga,
-    //         ];
+            $transaction_details = [
+                'order_id' => 'REPAINT-' . $reservasi->id . '-' . time(),
+                'gross_amount' => (int) $this->totalHarga,
+            ];
 
-    //         $customer_details = [
-    //             'first_name' => $user->name,
-    //             'email' => $user->email,
-    //         ];
+            $customer_details = [
+                'first_name' => $user->name,
+                'email' => $user->email,
+            ];
 
-    //         $transaction = [
-    //             'transaction_details' => $transaction_details,
-    //             'customer_details' => $customer_details,
-    //         ];
+            $transaction = [
+                'transaction_details' => $transaction_details,
+                'customer_details' => $customer_details,
+            ];
 
-    //         // Tambahkan log untuk debugging
-    //         \Log::info('Creating Snap Token with data:', $transaction);
+            // Tambahkan log untuk debugging
+            \Log::info('Creating Snap Token with data:', $transaction);
 
-    //         $snapToken = Snap::getSnapToken($transaction);
-    //         \Log::info('Snap Token created: ' . $snapToken);
+            $snapToken = Snap::getSnapToken($transaction);
+            \Log::info('Snap Token created: ' . $snapToken);
 
-    //         // Simpan snap token ke database
-    //         $payment = Payment::create([
-    //             'reservasi_id' => $reservasi->id,
-    //             'metode_pembayaran' => 'midtrans',
-    //             'status_pembayaran' => 'pending',
-    //             'snap_token' => $snapToken,
-    //         ]);
+            // Simpan snap token ke database
+            $payment = Payment::create([
+                'reservasi_id' => $reservasi->id,
+                'metode_pembayaran' => 'midtrans',
+                'status_pembayaran' => 'pending',
+                'snap_token' => $snapToken,
+            ]);
 
-    //         $this->snapToken = $snapToken;
+            $this->snapToken = $snapToken;
 
-    //         // Tambahkan log untuk memastikan snapToken tersimpan
-    //         \Log::info('Snap Token saved to component: ' . $this->snapToken);
+            // Tambahkan log untuk memastikan snapToken tersimpan
+            \Log::info('Snap Token saved to component: ' . $this->snapToken);
 
-    //         // Dispatch event to refresh the UI
-    //         $this->dispatch('snapTokenGenerated', ['token' => $snapToken]);
-    //     } catch (\Exception $e) {
-    //         \Log::error('Error creating Snap Token: ' . $e->getMessage());
-    //         \Log::error('Error trace: ' . $e->getTraceAsString());
-    //         session()->flash('error', 'Terjadi kesalahan: ' . $e->getMessage());
-    //     }
-    // }
+            // Dispatch event to refresh the UI
+            $this->dispatch('snapTokenGenerated', ['token' => $snapToken]);
+        } catch (\Exception $e) {
+            \Log::error('Error creating Snap Token: ' . $e->getMessage());
+            \Log::error('Error trace: ' . $e->getTraceAsString());
+            session()->flash('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
 
     public function refreshSnapToken()
     {
