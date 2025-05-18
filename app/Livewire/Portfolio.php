@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Image;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 use App\Models\Portfolio as PortfolioModel;
@@ -12,7 +13,7 @@ class Portfolio extends Component
     public function render()
     {
         return view('livewire.portfolio', [
-            'portfolios' => PortfolioModel::latest()->get()
-        ]);
+            'portfolios' => PortfolioModel::latest()->get(),
+        ]); 
     }
 }
