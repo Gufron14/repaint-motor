@@ -9,10 +9,10 @@
         </div>
     @endif
 
-    <h3 class="fw-bold mb-5 text-center">Riwayat Reservasi</h3>
+    <h3 class="fw-bold mb-3 text-center">Riwayat Reservasi</h3>
 
     @forelse ($reservasi as $index => $item)
-        <div class="card mx-auto mb-3 p-3 w-75">
+        <div class="card mx-auto mb-3 p-3">
             <div class="card-body">
                 <div class="mb-4">
                     @if ($item->status == 'pending')
@@ -41,7 +41,7 @@
                                 <i class="bi bi-x-lg"></i>
                             </div>
                             <div class="">
-                                Reservasi Anda Dibatalkan
+                                Reservasi ini <strong>Dibatalkan</strong> dan tidak akan diproses.
                             </div>
                         </div>
                     @elseif ($item->status == 'selesai')
@@ -58,155 +58,168 @@
                         {{-- @include('existing-status-badges') --}}
                     @endif
                 </div>
-                <div class="d-flex align-items-center justify-content-between mb-3 p-2">
-                    <div class="d-flex align-items-center flex-wrap">
-                        <span class="badge me-2 text-bg-warning fs-5">
-                            {{ $item->kategoriMotor->nama_kategori }}
-                        </span>
-                        <h4 class="mb-0 fw-bold">
-                            {{ $item->tipeMotor->nama_motor }}:
-                            @if (is_array($item->jenisRepaint) && count($item->jenisRepaint) > 0)
-                                {{ implode(', ', $item->jenisRepaint) }}
-                            @else
-                                Data tidak tersedia
-                            @endif
-                        </h4>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <span class="me-1">Nomor Polisi:</span>
-                        <span class="badge text-bg-info fs-6">
-                            {{ $item->nomor_polisi }}
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="d-flex align-items-center gap-5">
+                <div class="row align-items-center justify-content-between mb-4">
                     <div class="col">
-                        <table class="table table-borderless table-sm" width="50%">
-                            @if ($item->warna_body)
-                                <tr>
-                                    <td>Warna Body</td>
-                                    <td>:</td>
-                                    <td style="background-color: {{ $item->warna_body }};"
-                                        class="text-center text-uppercase">{{ $item->warna_body }}</td>
-                                </tr>
-                            @endif
-
-                            @if ($item->warna_velg)
-                                <tr>
-                                    <td>Warna Velg</td>
-                                    <td>:</td>
-                                    <td style="background-color: {{ $item->warna_velg }};"
-                                        class="text-center text-uppercase">{{ $item->warna_velg }}</td>
-                                </tr>
-                            @endif
-
-                            <tr>
-                                <td>Total Harga</td>
-                                <td>:</td>
-                                <td class="fw-bold text-success">Rp{{ number_format($item->total_harga, 0, ',', '.') }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Estimasi Waktu</td>
-                                <td>:</td>
-                                <td class="fw-bold text-success">
-                                    {{ $item->estimasi_waktu }} hari
-                                    <br>
-                                    <small>({{ \Carbon\Carbon::parse($item->created_at)->addDays($item->estimasi_waktu)->locale('id')->isoFormat('dddd, D MMMM Y') }})</small>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Bukti Bayar</td>
-                                <td>:</td>
-                                <td><a href="" data-bs-toggle="modal" data-bs-target="#imageModal">Lihat
-                                        Bukti</a></td>
-                            </tr>
-                            <tr>
-                                <td>Waktu Reservasi</td>
-                                <td>:</td>
-                                <td>{{ $item->created_at->format('d/m/Y H:i') }}</td>
-                            </tr>
-                            <tr>
-                                <td>Catatan</td>
-                                <td>:</td>
-                                <td>{{ $item->catatan }}</td>
-                            </tr>
-                        </table>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="badge text-bg-warning fs-6">
+                                {{ $item->kategoriMotor->nama_kategori }}
+                            </span>
+                            <span class="badge text-bg-info fs-6">
+                                {{ $item->nomor_polisi }}
+                            </span>
+                            <span class="badge text-bg-success fs-6">
+                                {{ $item->estimasi_waktu }} hari
+                            </span>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center flex-wrap">
+                                <h4 class="mb-0 fw-bold">
+                                    {{ $item->tipeMotor->nama_motor }}:
+                                    @if (is_array($item->jenisRepaint) && count($item->jenisRepaint) > 0)
+                                        {{ implode(', ', $item->jenisRepaint) }}
+                                    @else
+                                        Data tidak tersedia
+                                    @endif
+                                </h4>
+                            </div>
+                        </div>
                     </div>
-                    
-                    {{-- Status --}}
-                    <div class="col-3">
-                        <div class="mb-3">
-                            <div>Status Pembayaran:</div>
-                            @if ($item->payment && $item->payment->bukti_pembayaran)
-                                <span class="badge text-bg-success fs-6">Sudah Bayar</span>
-                                <br>
-                                <small>({{ $item->payment->metode_pembayaran }})</small>
-                            @else
-                                <span class="badge text-bg-warning fs-6">Belum Bayar</span>
-                            @endif
+                    <div class="col d-flex gap-2 align-items-center">
+                        <div class="card border-warning">
+                            <div class="card-body text-warning fw-bold">
+                                <label for="" class="form-label text-secondary text-uppercase">dp 10%</label>
+                                <span><a href="" data-bs-toggle="modal" data-bs-target="#imageModal"><i
+                                            class="bi bi-eye-fill"></i></a></span>
+                                <h5 class="mb-0 fw-bold">
+                                    Rp{{ number_format($item->total_harga * 0.1, 0, ',', '.') }}
+                                </h5>
+                            </div>
                         </div>
-                        <div>
-                            <div>Status Pengerjaan:</div>
-                            @if ($item->status == 'pending')
-                                <span class="badge text-bg-secondary fs-6">Menunggu Persetujuan</span>
-                            @elseif ($item->status == 'setuju')
-                                <span class="badge text-bg-primary fs-6"><i
-                                        class="bi bi-check2-all me-2"></i>Disetujui</span>
-                            @elseif ($item->status == 'bongkar')
-                                <span class="badge text-bg-warning fs-6">Proses Pembongkaran</span>
-                            @elseif ($item->status == 'cuci')
-                                <span class="badge text-bg-warning fs-6">Proses Pencucian</span>
-                            @elseif ($item->status == 'amplas')
-                                <span class="badge text-bg-warning fs-6">Proses Pengamplasan</span>
-                            @elseif ($item->status == 'dempul')
-                                <span class="badge text-bg-warning fs-6">Proses Pendempulan</span>
-                            @elseif ($item->status == 'epoxy')
-                                <span class="badge text-bg-warning fs-6">Proses Epoxy</span>
-                            @elseif ($item->status == 'warna')
-                                <span class="badge text-bg-warning fs-6">Proses Naik Warna</span>
-                            @elseif ($item->status == 'permis')
-                                <span class="badge text-bg-warning fs-6">Proses Permis</span>
-                            @elseif ($item->status == 'pasang')
-                                <span class="badge text-bg-warning fs-6">Proses Pemasangan Kembali</span>
-                            @elseif ($item->status == 'selesai')
-                                <span class="badge text-bg-success fs-6"><i
-                                        class="bi bi-check2-circle me-2"></i>Selesai</span>
-                            @elseif ($item->status == 'batal')
-                                <span class="badge text-bg-danger fs-6"><i class="bi bi-x-lg me-2"></i>Dibatalkan</span>
-                            @elseif ($item->status == 'tolak')
-                                <span class="badge text-bg-danger fs-6"><i class="bi bi-x-lg me-2"></i>Ditolak</span>
-                            @endif
+                        <div class="card border-danger">
+                            <div class="card-body text-danger fw-bold">
+                                <label for="" class="form-label text-secondary text-uppercase">sisa
+                                    bayar</label>
+                                <h5 class="mb-0 fw-bold">
+                                    Rp{{ number_format($item->total_harga * 0.9, 0, ',', '.') }}
+                                </h5>
+                            </div>
                         </div>
-                        <small class="text-danger">{{ $item->updated_at->format('d/m/Y H:i') }}</small>
 
+                        <div class="card border-success">
+                            <div class="card-body text-success fw-bold">
+                                <label for="" class="form-label text-secondary text-uppercase">total
+                                    harga</label>
+                                <span><a href="" data-bs-toggle="modal" data-bs-target="#exampleModal""><i
+                                            class="bi bi-eye-fill"></i></a></span>
+                                <h5 class="mb-0 fw-bold">
+                                    Rp{{ number_format($item->total_harga, 0, ',', '.') }}
+                                </h5>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                {{-- Button --}}
-                <div class="mt-5 float-end">
+                <div class="d-flex gap-3">
+                    <div class="alert alert-warning text-center" role="alert">
+                        Status pengeerjaan Repaint Motor saat ini:
+                        <strong>
+                            @if ($item->status == 'pending')
+                                Menunggu Persetujuan
+                            @elseif ($item->status == 'setuju')
+                                Disetujui
+                            @elseif ($item->status == 'bongkar')
+                                Proses Pembongkaran
+                            @elseif ($item->status == 'cuci')
+                                Proses Pencucian
+                            @elseif ($item->status == 'amplas')
+                                Proses Pengamplasan
+                            @elseif ($item->status == 'dempul')
+                                Proses Pendempulan
+                            @elseif ($item->status == 'epoxy')
+                                Proses Epoxy
+                            @elseif ($item->status == 'warna')
+                                Proses Naik Warna
+                            @elseif ($item->status == 'permis')
+                                Proses Permis
+                            @elseif ($item->status == 'pasang')
+                                Proses Pemasangan Kembali
+                            @elseif ($item->status == 'selesai')
+                                Selesai
+                            @elseif ($item->status == 'batal')
+                                Dibatalkan
+                            @elseif ($item->status == 'tolak')
+                                Ditolak
+                            @endif
+                        </strong>
+                    </div>
+                    <div class="alert alert-info text-center" role="alert">
+                        Estimasi waktu pengerjaan <strong>{{ $item->estimasi_waktu }} hari</strong> sampai dengan
+                        <strong>{{ \Carbon\Carbon::parse($item->created_at)->addDays($item->estimasi_waktu)->locale('id')->isoFormat('dddd, D MMMM Y') }}</strong>
+                    </div>
+
+                </div>
+
+                @php
+                    $warnaList = [
+                        'Body' => $item->warna_body ?? null,
+                        'Velg' => $item->warna_velg ?? null,
+                        'Knalpot' => $item->warna_knalpot ?? null,
+                        'CVT' => $item->warna_cvt ?? null,
+                    ];
+                @endphp
+
+                <div class="d-flex gap-3 justify-content-center mb-4">
+                    @foreach ($warnaList as $label => $warna)
+                        @if ($warna)
+                            <div class="card w-100">
+                                <div class="d-flex align-items-center justify-content-center text-white"
+                                    style="height: 200px; background-color: {{ $warna }}">
+                                    <div class="text-center p-3">
+                                        <small class="opacity-75">Warna {{ $label }}</small>
+                                        <h5 class="mb-0 fw-bold text-uppercase">{{ $warna }}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <label for="" class="form-label text-secondary">Waktu Reservasi:</label>
+                        <span>{{ $item->created_at->format('d/m/Y H:i') }} WIB</span>
+                    </div>
+                    <div>
+                        @if ($item->status == 'pending')
+                            <button wire:click="batalkanReservasi({{ $item->id }})"
+                                wire:confirm="Yakin ingin membatalkan reservasi?" class="btn btn-danger fw-bold">
+                                Batalkan Reservasi
+                            </button>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- BUtton --}}
+                {{-- <div class="mt-4">
                     @if ($item->status == 'pending')
                         <div class="d-flex gap-2">
-                            <button wire:click="batalkanReservasi({{ $item->id }})"
-                                class="btn btn-danger fw-bold"
+                            <button wire:click="batalkanReservasi({{ $item->id }})" class="btn btn-danger fw-bold"
                                 onclick="return confirm('Yakin ingin membatalkan reservasi?')">
                                 Batalkan Reservasi
                             </button>
-                            
-                            @if(!$item->payment || !$item->payment->bukti_pembayaran)
+
+                            @if (!$item->payment || !$item->payment->bukti_pembayaran)
                                 <button class="btn fw-bold btn-success" data-bs-toggle="modal"
                                     data-bs-target="#modalPembayaran{{ $item->id }}">Bayar Sekarang</button>
                             @endif
                         </div>
                     @else
-                        <button wire:click="batalkanReservasi({{ $item->id }})"
-                            class="btn btn-danger fw-bold"
+                        <button wire:click="batalkanReservasi({{ $item->id }})" class="btn btn-danger fw-bold"
                             onclick="return confirm('Yakin ingin membatalkan reservasi?')" disabled>
                             Batalkan Reservasi
                         </button>
                     @endif
-                </div>                    
+                </div> --}}
             </div>
         </div>
 
@@ -266,6 +279,49 @@
                                 Bukti pembayaran belum tersedia karena belum melakukan pembayaran
                             </div>
                         @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Modal Rincian Biaya --}}
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Rincian Biaya</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-responsive mt-3">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr class="text-center">
+                                        <th>Jenis Repaint</th>
+                                        <th>Harga</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    @foreach ($item->jenisRepaintDetails as $jenis)
+                                        <tr>
+                                            <td>{{ $jenis['nama'] }}</td>
+                                            <td>Rp{{ number_format($jenis['harga'], 0, ',', '.') }}</td>
+                                        </tr>
+                                    @endforeach
+                                    <tr class="table-secondary fw-bold">
+                                        <td>Total Harga</td>
+                                        <td>Rp{{ number_format($item->total_harga, 0, ',', '.') }}</td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary fw-bold" data-bs-dismiss="modal">Tutup</button>
                     </div>
                 </div>
             </div>

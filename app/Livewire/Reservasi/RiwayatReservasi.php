@@ -6,6 +6,7 @@ use App\Models\Payment;
 use Livewire\Component;
 use App\Models\Reservasi;
 use App\Models\JenisRepaint;
+use App\Models\MotorRepaint;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Title;
 
@@ -54,24 +55,42 @@ class RiwayatReservasi extends Component
     }
     
 
-    public function render()
-    {
-        $reservasi = Reservasi::with(['tipeMotor', 'kategoriMotor', 'payment', 'user'])
+public function render()
+{
+    $reservasi = Reservasi::with(['tipeMotor', 'kategoriMotor', 'payment', 'user'])
         ->where('user_id', auth()->id())
         ->orderBy('created_at', 'desc')
         ->get();
-    
-        // Decode JSON dan ambil data jenis repaint
-        $reservasi->transform(function ($item) {
-            $jenisRepaintIds = json_decode($item->jenis_repaint_id, true); // Decode JSON ke array
-            $item->jenisRepaint = JenisRepaint::whereIn('id', $jenisRepaintIds)->pluck('nama_repaint')->toArray();
-            return $item;
-        });
 
-        return view('livewire.reservasi.riwayat-reservasi', [
-            'reservasi' => $reservasi,
-        ]);
-    }
+    $reservasi->transform(function ($item) {
+        $jenisRepaintIds = json_decode($item->jenis_repaint_id, true); // array of IDs
+        $item->jenisRepaint = JenisRepaint::whereIn('id', $jenisRepaintIds)->pluck('nama_repaint')->toArray();
+        $tipeMotorId = $item->tipe_motor_id;
+
+        // Ambil data harga berdasarkan kombinasi tipe_motor_id & jenis_repaint_id
+        $details = MotorRepaint::with('jenisRepaint')
+            ->where('tipe_motor_id', $tipeMotorId)
+            ->whereIn('jenis_repaint_id', $jenisRepaintIds)
+            ->get();
+
+        $jenisRepaintDetails = $details->map(function ($detail) {
+            return [
+                'nama' => $detail->jenisRepaint->nama_repaint,
+                'harga' => $detail->harga,
+            ];
+        })->toArray();
+
+        $item->jenisRepaintDetails = $jenisRepaintDetails;
+        $item->total_harga = array_sum(array_column($jenisRepaintDetails, 'harga'));
+
+        return $item;
+    });
+
+    return view('livewire.reservasi.riwayat-reservasi', [
+        'reservasi' => $reservasi,
+    ]);
+}
+
 
     public function batalkanReservasi($id)
     {

@@ -13,8 +13,7 @@ use Illuminate\Support\Facades\Auth;
 
 #[Title('Kalkulator Harga')]
 class KalkulatorHarga extends Component
-{   
-
+{
     public $kategoriMotor;
     public $tipeMotor = [];
     public $jenisRepaint;
@@ -28,6 +27,9 @@ class KalkulatorHarga extends Component
     public $availableFullBodyTypes = [];
     public $availableBodyHalusTypes = [];
     public $availableBodyKasarTypes = [];
+    public $availableVelgTypes = [];
+    public $availableKnalpotTypes = [];
+    public $availableCVTTypes = [];
 
     public $reservasiTersimpan = false; // Cek apakah reservasi sudah tersimpan
 
@@ -74,6 +76,9 @@ class KalkulatorHarga extends Component
             $this->availableFullBodyTypes = $motorRepaints->where('jenis_repaint_id', 1)->pluck('tipe_motor_id')->toArray();
             $this->availableBodyHalusTypes = $motorRepaints->where('jenis_repaint_id', 2)->pluck('tipe_motor_id')->toArray();
             $this->availableBodyKasarTypes = $motorRepaints->where('jenis_repaint_id', 3)->pluck('tipe_motor_id')->toArray();
+            $this->availableVelgTypes = $motorRepaints->where('jenis_repaint_id', 4)->pluck('tipe_motor_id')->toArray();
+            $this->availableKnalpotTypes = $motorRepaints->where('jenis_repaint_id', 5)->pluck('tipe_motor_id')->toArray();
+            $this->availableCVTTypes = $motorRepaints->where('jenis_repaint_id', 6)->pluck('tipe_motor_id')->toArray();
         }
 
         $this->resetCalculation();
@@ -81,17 +86,45 @@ class KalkulatorHarga extends Component
 
     public function updatedSelectedRepaints($value)
     {
-        $velgId = 4;
+        $fullBodyId = 1;
+        $bodyHalusId = 2;
+        $bodyKasarId = 3;
+        $allowedSecondary = [4, 5, 6]; // velg, knalpot, cvt
 
-        // Jika memilih lebih dari 2 jenis
-        if (count($this->selectedRepaints) > 2) {
-            $this->selectedRepaints = array_slice($this->selectedRepaints, 0, 2);
+        // Logika: hanya salah satu dari Full Body, Body Halus, Body Kasar yang boleh aktif
+        $bodyIds = [$fullBodyId, $bodyHalusId, $bodyKasarId];
+        $selectedBodyIds = array_intersect($this->selectedRepaints, $bodyIds);
+
+        if (count($selectedBodyIds) > 1) {
+            // Ambil ID terakhir yang dicentang dari group body
+            $lastBodySelected = end($selectedBodyIds);
+
+            // Reset pilihan body hanya ke ID terakhir
+            $this->selectedRepaints = array_filter($this->selectedRepaints, function ($id) use ($bodyIds, $lastBodySelected) {
+                // Buang semua kecuali body terakhir & pilihan non-body
+                return !in_array($id, $bodyIds) || $id == $lastBodySelected;
+            });
+
+            // Reset array index
+            $this->selectedRepaints = array_values($this->selectedRepaints);
         }
 
-        // Jika memilih 2 jenis, salah satunya harus velg
-        if (count($this->selectedRepaints) == 2) {
-            if (!in_array($velgId, $this->selectedRepaints)) {
-                // Jika tidak ada velg, ambil pilihan terakhir saja
+        // Maksimal 4 pilihan
+        if (count($this->selectedRepaints) > 4) {
+            $this->selectedRepaints = array_slice($this->selectedRepaints, 0, 4);
+        }
+
+        // Jika memilih 2 jenis, salah satunya harus velg, knalpot, atau cvt
+        if (count($this->selectedRepaints) === 2) {
+            $containsAllowed = false;
+            foreach ($this->selectedRepaints as $id) {
+                if (in_array($id, $allowedSecondary)) {
+                    $containsAllowed = true;
+                    break;
+                }
+            }
+
+            if (!$containsAllowed) {
                 $this->selectedRepaints = [end($this->selectedRepaints)];
             }
         }
@@ -145,14 +178,13 @@ class KalkulatorHarga extends Component
         ]);
 
         $reservasi->update([
-            'jenis_repaint_id' => json_encode($this->selectedRepaints)
+            'jenis_repaint_id' => json_encode($this->selectedRepaints),
         ]);
 
         $this->reservasiId = $reservasi->id;
         $this->reservasiTersimpan = true; // Tandai bahwa reservasi sudah tersimpan
 
         session()->flash('message', 'Reservasi berhasil disimpan! Silakan lanjutkan ke pembayaran.');
-
     }
 
     public function render()

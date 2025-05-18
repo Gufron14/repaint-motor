@@ -34,21 +34,28 @@ class DatabaseSeeder extends Seeder
                     ['nama' => 'Body Halus', 'harga' => 500000, 'estimasi' => '5 hari'],
                     ['nama' => 'Body Kasar', 'harga' => 200000, 'estimasi' => '5 hari'],
                     ['nama' => 'Velg', 'harga' => 250000, 'estimasi' => '1 hari'],
+                    ['nama' => 'Knalpot', 'harga' => 50000, 'estimasi' => '1 hari'],
                 ]
             ],
             'Motor 2 Tak' => [
                 'tipe_motor' => [
                     'RX King' => [
                         ['nama' => 'Full body', 'harga' => 700000, 'estimasi' => '7 hari'],
-                        ['nama' => 'Velg', 'harga' => 300000, 'estimasi' => '1 hari']
+                        ['nama' => 'Velg', 'harga' => 300000, 'estimasi' => '1 hari'],
+                        ['nama' => 'Knalpot', 'harga' => 50000, 'estimasi' => '1 hari'],
+
                     ],
                     'Ninja R' => [
                         ['nama' => 'Full body', 'harga' => 700000, 'estimasi' => '7 hari'],
-                        ['nama' => 'Velg', 'harga' => 300000, 'estimasi' => '1 hari']
+                        ['nama' => 'Velg', 'harga' => 300000, 'estimasi' => '1 hari'],
+                        ['nama' => 'Knalpot', 'harga' => 50000, 'estimasi' => '1 hari'],
+
                     ],
                     'Ninja RR' => [
                         ['nama' => 'Full body', 'harga' => 1000000, 'estimasi' => '7 hari'],
-                        ['nama' => 'Velg', 'harga' => 300000, 'estimasi' => '1 hari']
+                        ['nama' => 'Velg', 'harga' => 300000, 'estimasi' => '1 hari'],
+                        ['nama' => 'Knalpot', 'harga' => 50000, 'estimasi' => '1 hari'],
+
                     ],
                 ]
             ],
@@ -59,6 +66,7 @@ class DatabaseSeeder extends Seeder
                     ['nama' => 'Body Halus', 'harga' => 600000, 'estimasi' => '5 hari'],
                     ['nama' => 'Body Kasar', 'harga' => 250000, 'estimasi' => '5 hari'],
                     ['nama' => 'Velg', 'harga' => 350000, 'estimasi' => '1 hari'],
+                    ['nama' => 'Knalpot', 'harga' => 50000, 'estimasi' => '1 hari'],
                 ]
             ],
             'Motor 250 CC' => [
@@ -68,6 +76,7 @@ class DatabaseSeeder extends Seeder
                     ['nama' => 'Body Halus', 'harga' => 750000, 'estimasi' => '5 hari'],
                     ['nama' => 'Body Kasar', 'harga' => 250000, 'estimasi' => '5 hari'],
                     ['nama' => 'Velg', 'harga' => 350000, 'estimasi' => '1 hari'],
+                    ['nama' => 'Knalpot', 'harga' => 50000, 'estimasi' => '1 hari'],
                 ]
             ],
             'Motor Matic' => [
@@ -79,6 +88,8 @@ class DatabaseSeeder extends Seeder
                     ['nama' => 'Body Halus', 'harga' => 350000, 'estimasi' => '5 hari'],
                     ['nama' => 'Body Kasar', 'harga' => 250000, 'estimasi' => '5 hari'],
                     ['nama' => 'Velg', 'harga' => 250000, 'estimasi' => '1 hari'],
+                    ['nama' => 'Knalpot', 'harga' => 50000, 'estimasi' => '1 hari'],
+                    ['nama' => 'CVT', 'harga' => 100000, 'estimasi' => '1 hari'],
                 ]
             ],
             'Motor Matic (Premium)' => [
@@ -90,6 +101,8 @@ class DatabaseSeeder extends Seeder
                     ['nama' => 'Body Halus', 'harga' => 700000, 'estimasi' => '5 hari'],
                     ['nama' => 'Body Kasar', 'harga' => 250000, 'estimasi' => '5 hari'],
                     ['nama' => 'Velg', 'harga' => 250000, 'estimasi' => '1 hari'],
+                    ['nama' => 'Knalpot', 'harga' => 50000, 'estimasi' => '1 hari'],
+                    ['nama' => 'CVT', 'harga' => 100000, 'estimasi' => '1 hari'],
                 ]
             ],
             'Motor Matic (Big)' => [
@@ -99,6 +112,8 @@ class DatabaseSeeder extends Seeder
                     ['nama' => 'Body Halus', 'harga' => 1000000, 'estimasi' => '5 hari'],
                     ['nama' => 'Body Kasar', 'harga' => 300000, 'estimasi' => '5 hari'],
                     ['nama' => 'Velg', 'harga' => 250000, 'estimasi' => '1 hari'],
+                    ['nama' => 'Knalpot', 'harga' => 50000, 'estimasi' => '1 hari'],
+                    ['nama' => 'CVT', 'harga' => 100000, 'estimasi' => '1 hari'],
                 ]
             ],
             'Motor Matic (Stylish)' => [
@@ -108,6 +123,8 @@ class DatabaseSeeder extends Seeder
                     ['nama' => 'Body Halus', 'harga' => 1000000, 'estimasi' => '5 hari'],
                     ['nama' => 'Body Kasar', 'harga' => 250000, 'estimasi' => '5 hari'],
                     ['nama' => 'Velg', 'harga' => 250000, 'estimasi' => '1 hari'],
+                    ['nama' => 'Knalpot', 'harga' => 50000, 'estimasi' => '1 hari'],
+                    ['nama' => 'CVT', 'harga' => 100000, 'estimasi' => '1 hari'],
                 ]
             ]
         ];
@@ -143,5 +160,3 @@ class DatabaseSeeder extends Seeder
         }
     }
 }
-
-

@@ -26,8 +26,12 @@ class Reservasi extends Model
         'jenis_repaint_id',
         'warna_body',
         'warna_velg',
+        'warna_knalpot',
+        'warna_cvt',
         'foto_motor',
         'foto_velg',
+        'foto_knalpot',
+        'foto_cvt',
         'nomor_polisi',
         'catatan',
         'total_harga',
@@ -35,6 +39,12 @@ class Reservasi extends Model
         'status',
         'status_bayar'
     ];
+
+        // Tambahkan accessor untuk jenis_repaint_details
+    // public function getJenisRepaintDetailsAttribute()
+    // {
+    //     return [];
+    // }
 
     public function user()
     {
@@ -60,4 +70,5 @@ class Reservasi extends Model
     {
         return $this->hasOne(Payment::class, 'reservasi_id');
     }
+    
 }
