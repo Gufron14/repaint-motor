@@ -36,7 +36,7 @@ class Login extends Component
             if ($user->hasRole('admin')) {
                 return redirect()->route('admin.dashboard');
             } else {
-                return redirect()->route('reservasi');
+                return redirect()->route('/');
             }
         } else {
             // Jika email benar tapi password salah

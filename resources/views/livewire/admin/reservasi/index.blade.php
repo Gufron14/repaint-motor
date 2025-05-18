@@ -10,12 +10,12 @@
             <thead>
                 <tr class="text-center align-middle">
                     <th>#</th>
-                    <th>Waktu Reservasi</th>
-                    <th>Nama Customer</th>
+                    <th>Waktu</th>
+                    <th>Customer</th>
                     <th>Reservasi</th>
-                    <th colspan="2">Warna</th>
+                    {{-- <th colspan="2">Warna</th> --}}
                     <th>Status Proses</th>
-                    <th>Status Pembayaran</th>
+                    <th>DP 10%</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -35,7 +35,7 @@
                                 Data tidak tersedia
                             @endif
                         </td>
-                        @if ($item->warna_body && $item->warna_velg)
+                        {{-- @if ($item->warna_body && $item->warna_velg)
                             <td style="background-color: {{ $item->warna_body }}" class="text-uppercase align-middle">
                                 {{ $item->warna_body }}</td>
                             <td style="background-color: {{ $item->warna_velg }}" class="text-uppercase align-middle">
@@ -48,7 +48,7 @@
                             <td colspan="2" style="background-color: {{ $item->warna_velg }}"
                                 class="text-uppercase align-middle">
                                 {{ $item->warna_velg }}</td>
-                        @endif
+                        @endif --}}
 
                         <td class="align-middle">
                             @if ($item->status == 'pending')

@@ -8,7 +8,8 @@
     </ul>
 
     <!-- Right navbar links -->
-    <div class="ml-auto border">
+    <div class="ml-auto border d-flex gap-2">
+        <a href="{{ route('/') }}" class="btn btn-outline-success">Website</a>
         <li class="nav nav-item dropdown dropstart">
             <button class="btn btn-danger dropdown-toggle dropstart" data-bs-toggle="dropdown" aria-expanded="false">
                 {{ Auth::user()->name }}

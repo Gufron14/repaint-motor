@@ -23,7 +23,8 @@ class Index extends Component
 
     public function render()
     {
-        $query = Reservasi::with(['tipeMotor', 'kategoriMotor', 'payment', 'user']);
+        $query = Reservasi::with(['tipeMotor', 'kategoriMotor', 'payment', 'user'])
+            ->orderBy('created_at', 'asc');
         
         if (!auth()->user()->hasRole('admin')) {
             $query->where('user_id', auth()->id());

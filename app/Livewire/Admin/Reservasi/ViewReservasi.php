@@ -59,24 +59,6 @@ class ViewReservasi extends Component
         $this->reservasi->jenisRepaint = JenisRepaint::whereIn('id', $jenisRepaintIds)->pluck('nama_repaint')->toArray();
     }
     
-    
-    
-    public function updateStatus($status)
-    {
-        $this->reservasi->update([
-            'status' => $status
-        ]);
-        
-        $this->loadReservasi();
-        
-        $statusMessages = [
-            'confirmed' => 'Reservasi berhasil dikonfirmasi',
-            'completed' => 'Reservasi berhasil diselesaikan',
-            'cancelled' => 'Reservasi berhasil dibatalkan'
-        ];
-        
-        session()->flash('message', $statusMessages[$status] ?? 'Status berhasil diperbarui');
-    }
 
     public function render()
     {

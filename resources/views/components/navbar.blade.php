@@ -39,7 +39,7 @@
 
             </ul>
 
-            <div class="text-end d-flex gap-3">
+            <div class="text-end d-flex">
                 @guest
                     <!-- Jika user belum login, tampilkan tombol Login dan Daftar -->
                     <a href="{{ route('login') }}" class="btn btn-outline-light me-2 fw-bold">Login</a>
