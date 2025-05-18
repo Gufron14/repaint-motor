@@ -1,6 +1,6 @@
 <div>
     <div class="row">
-        <div class="card p-5 mx-auto" style="width: 50%">
+        <div class="card p-5 mx-auto" style="width: 75%">
             <div class="mb-3">
                 <h4 class="fw-bold">Hitung Harga dan Estimasi Waktu Repaint Motor</h4>
             </div>
@@ -41,8 +41,18 @@
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" wire:model.live="selectedRepaints"
-                            value="4" id="velg">
+                            value="4" id="velg" @if (!in_array($selectedTipe, $availableVelgTypes)) disabled @endif>
                         <label class="form-check-label" for="velg">Velg</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" wire:model.live="selectedRepaints"
+                            value="5" id="knalpot" @if (!in_array($selectedTipe, $availableKnalpotTypes)) disabled @endif>
+                        <label class="form-check-label" for="knalpot">Knalpot</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" wire:model.live="selectedRepaints"
+                            value="6" id="cvt" @if (!in_array($selectedTipe, $availableCVTTypes)) disabled @endif>
+                        <label class="form-check-label" for="cvt">CVT</label>
                     </div>
                 </div>
             @endif
