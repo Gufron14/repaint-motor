@@ -1,3 +1,7 @@
+* {
+    font-family: 'ubuntu', sans-serif;
+}
+
 .nav-link {
     color: white !important; /* Warna teks default untuk semua nav-link */
     font-weight: bold;
