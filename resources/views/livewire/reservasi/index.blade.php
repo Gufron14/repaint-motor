@@ -264,20 +264,19 @@
                         </div>
                     @endif
                     
-                    @if (session()->has('error'))
+                    {{-- @if (session()->has('error'))
                         <div class="alert alert-danger">
                             {{ session('error') }}
                         </div>
-                    @endif
+                    @endif --}}
                     
                     <!-- Debug info untuk development -->
-                    @if (app()->environment('local'))
+                    {{-- @if (app()->environment('local'))
                     <div class="alert alert-info">
                         <p><strong>Info:</strong></p>
-                        {{-- <p>Reservasi ID: {{ $reservasiId ?? 'Tidak ada' }}</p> --}}
                         <p>Reservasi {{ $reservasiTersimpan ? 'Berhasil' : 'Tidak' }} Tersimpan</p>
                     </div>
-                    @endif
+                    @endif --}}
 
                     <div class="mb-3">
                         <p class="fw-bold h4">Total Pembayaran DP 10%: Rp. {{ number_format($dpHarga, 0, ',', '.') }}</p>

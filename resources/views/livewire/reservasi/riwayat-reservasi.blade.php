@@ -184,10 +184,15 @@
                     @endforeach
                 </div>
 
+                <div class="d-flex mb-3 gap-2 align-items-center">
+                    <label for="" class="form-label text-secondary">Catatan:</label>
+                    <input type="text" class="form-control" placeholder="{{ $item->catatan }}" disabled>
+                </div>
+
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <label for="" class="form-label text-secondary">Waktu Reservasi:</label>
-                        <span>{{ $item->created_at->format('d/m/Y H:i') }} WIB</span>
+                        <small class="form-label text-secondary">Waktu Reservasi:</small>
+                        <small><span>{{ $item->created_at->format('d/m/Y H:i') }} WIB</span></small>
                     </div>
                     <div>
                         @if ($item->status == 'pending')
