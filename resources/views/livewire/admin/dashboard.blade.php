@@ -49,8 +49,9 @@
                 </div>
             </div>
         </div>
+
         <!-- Card Total Pendapatan -->
-        <div class="d-flex mt-4 gap-5">
+        {{-- <div class="d-flex mt-4 gap-5">
             <div class="card shadow-sm border-0 rounded-3 bg-light-primary h-100">
                 <div class="card-body d-flex align-items-center">
                     <div class="me-3">
@@ -77,6 +78,6 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
     </div>
 </div>

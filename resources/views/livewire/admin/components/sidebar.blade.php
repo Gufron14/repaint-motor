@@ -31,9 +31,9 @@
                         <x-nav-link :active="request()->routeIs('admin.tipe-motor')" href="{{ route('admin.tipe-motor') }}">
                             <i class="nav-icon fas fa-motorcycle"></i>Tipe Motor
                         </x-nav-link>
-                        <x-nav-link :active="request()->routeIs('admin.jenis-repaint')" href="{{ route('admin.jenis-repaint') }}">
+                        {{-- <x-nav-link :active="request()->routeIs('admin.jenis-repaint')" href="{{ route('admin.jenis-repaint') }}">
                             <i class="nav-icon fas fa-palette"></i>Jenis Repaint
-                        </x-nav-link>
+                        </x-nav-link> --}}
                         <x-nav-link :active="request()->routeIs('admin.harga-repaint')" href="{{ route('admin.harga-repaint') }}">
                             <i class="nav-icon fas fa-tag"></i>Harga Repaint
                         </x-nav-link>
