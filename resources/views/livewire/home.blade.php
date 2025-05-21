@@ -8,7 +8,7 @@
 
     <h3 class="text-center fw-bold">Portofolio</h3>
     <div class="row g-4">
-        @foreach(\App\Models\Portfolio::latest()->take(6)->get() as $portfolio)
+        @foreach(\App\Models\Portfolio::latest()->take(3)->get() as $portfolio)
             <div class="col-lg-4 col-md-6">
                 @if($portfolio->type === 'video')
                     <video controls class="w-100 shadow-1-strong rounded mb-4" autoplay muted loop>
