@@ -55,8 +55,8 @@
                                         <th>No.</th>
                                         <th>Reservasi</th>
                                         <th>Nomor Polisi</th>
-                                        <th>Foto Motor</th>
-                                        <th>Foto Velg</th>
+                                        {{-- <th>Foto Motor</th>
+                                        <th>Foto Velg</th> --}}
                                         <th>Status</th>
                                         <th>Tanggal Reservasi</th>
                                     </tr>
@@ -81,7 +81,7 @@
                                                 @endif
                                             </td>
                                             <td>{{ $reservasi->nomor_polisi }}</td>
-                                            <td>
+                                            {{-- <td>
                                                 @if($reservasi->foto_motor)
                                                     <a href="{{ asset('storage/' . $reservasi->foto_motor) }}" target="_blank">
                                                         <img src="{{ asset('storage/' . $reservasi->foto_motor) }}" alt="Foto Motor" class="img-thumbnail" style="max-width: 100px;">
@@ -98,7 +98,7 @@
                                                 @else
                                                     Tidak ada foto
                                                 @endif
-                                            </td>
+                                            </td> --}}
                                             <td>
                                                 @if($reservasi->status == 'selesai')
                                                     <span class="badge bg-success">Selesai</span>
