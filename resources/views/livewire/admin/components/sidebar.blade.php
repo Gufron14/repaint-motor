@@ -44,6 +44,10 @@
                             <i class="nav-icon fas fa-brush"></i>Portofolio
                         </x-nav-link>
 
+                        <x-nav-link :active="request()->routeIs('admin.laporan')" href="{{ route('admin.laporan') }}">
+                            <i class="nav-icon fas fa-brush"></i>Laporan
+                        </x-nav-link>
+
                         <li class="nav-header text-uppercase">Kelola Customer</li>
 
                         {{-- <li class="nav-header">KELOLA USERS</li> --}}

@@ -20,11 +20,9 @@ class Antrean extends Component
             ->orderBy('created_at', 'asc')
             ->get();
 
-        $totalHariSebelumnya = 0;
-        $today = Carbon::now();
         $currentUserId = Auth::id();
         
-        return $reservasis->map(function ($reservasi, $index) use (&$totalHariSebelumnya, $today, $currentUserId) {
+        return $reservasis->map(function ($reservasi, $index) use ($currentUserId) {
             $hariPengerjaan = $reservasi->estimasi_waktu;
             
             // Jika status sudah pasang, maka estimasi waktu jadi 0 hari
@@ -46,26 +44,32 @@ class Antrean extends Component
                 $hariPengerjaan = max(1, $hariPengerjaan - $pengurangan);
             }
             
-            // Hitung estimasi selesai berdasarkan total hari pengerjaan sebelumnya
-            if ($index === 0) {
-                $hariSelesai = $hariPengerjaan;
-            } else {
-                $hariSelesai = $totalHariSebelumnya + $hariPengerjaan;
-            }
-            
-            // Update total hari untuk customer berikutnya
-            $totalHariSebelumnya = $hariSelesai;
+            // Estimasi selesai hanya berdasarkan estimasi waktu reservasi itu sendiri
+            $hariSelesai = $hariPengerjaan;
             
             // Ambil nama jenis repaint
             $repaintIds = json_decode($reservasi->jenis_repaint_id);
             $jenisRepaints = JenisRepaint::whereIn('id', $repaintIds)->pluck('nama_repaint')->toArray();
+            $tipeMotorId = $reservasi->tipe_motor_id;
             
-            // Tentukan label customer (Kamu atau Customer X)
-            // Nomor antrean dimulai dari 1 (bukan 0)
-            $customerNumber = $index + 1;
-            $customerLabel = ($currentUserId && $reservasi->user_id == $currentUserId) 
-                ? 'Kamu' 
-                : 'Customer ' . $customerNumber;
+            // Tentukan label customer (Kamu atau nama yang disamarkan)
+            $isCurrentUser = ($currentUserId && $reservasi->user_id == $currentUserId);
+            
+            if ($isCurrentUser) {
+                $customerLabel = 'Kamu';
+            } else {
+                // Ambil nama user dan samarkan
+                $nama = $reservasi->user->name ?? 'Customer';
+                if (strlen($nama) > 2) {
+                    $firstChar = mb_substr($nama, 0, 1);
+                    $lastChar = mb_substr($nama, -1, 1);
+                    $middleLength = mb_strlen($nama) - 2;
+                    $stars = str_repeat('*', $middleLength);
+                    $customerLabel = $firstChar . $stars . $lastChar;
+                } else {
+                    $customerLabel = $nama; // Jika nama terlalu pendek, tampilkan apa adanya
+                }
+            }
             
             // Format status untuk tampilan
             $statusLabel = ucfirst($reservasi->status);
@@ -77,7 +81,9 @@ class Antrean extends Component
                 'customer' => $customerLabel,
                 'repaint' => $jenisRepaints,
                 'status' => $statusLabel,
-                'estimasi_selesai' => $estimasiSelesai
+                'estimasi_selesai' => $estimasiSelesai,
+                'is_current_user' => $isCurrentUser,
+                'tipe_motor' => $reservasi->tipeMotor->nama_motor ?? '-' // Menggunakan nama_motor dari reservasi
             ];
         });
     }

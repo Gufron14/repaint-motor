@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Admin\Laporan;
 use App\Livewire\Home;
 use App\Livewire\Antrean;
 use App\Livewire\Portfolio;
@@ -64,6 +65,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('harga-repaint', HargaRepaint::class)->name('admin.harga-repaint');
 
     Route::get('portofolio', AdminPortfolio::class)->name('admin.portofolio');
+    Route::get('laporan', Laporan::class)->name('admin.laporan');
 
     // Kelola Customer
     Route::get('customer', App\Livewire\Admin\Customer\Customer::class)->name('admin.customer');
