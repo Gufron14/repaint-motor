@@ -100,10 +100,11 @@
                                 <label for="" class="form-label text-secondary text-uppercase">sisa
                                     bayar</label>
                                 <h5 class="mb-0 fw-bold">
-                                    Rp{{ number_format($item->total_harga * 0.9, 0, ',', '.') }}
+                                    {{ $item->formatted_sisa_bayar }}
                                 </h5>
                             </div>
                         </div>
+
 
                         <div class="card border-success">
                             <div class="card-body text-success fw-bold">

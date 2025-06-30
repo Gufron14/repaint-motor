@@ -40,11 +40,20 @@ class Reservasi extends Model
         'status_bayar'
     ];
 
-        // Tambahkan accessor untuk jenis_repaint_details
-    // public function getJenisRepaintDetailsAttribute()
-    // {
-    //     return [];
-    // }
+    // Add method to calculate remaining payment
+    public function getSisaBayarAttribute()
+    {
+        if ($this->status == 'selesai') {
+            return 0;
+        }
+        return $this->total_harga * 0.9;
+    }
+
+    // Add method to get formatted remaining payment
+    public function getFormattedSisaBayarAttribute()
+    {
+        return 'Rp' . number_format($this->sisa_bayar, 0, ',', '.');
+    }
 
     public function user()
     {
@@ -70,5 +79,4 @@ class Reservasi extends Model
     {
         return $this->hasOne(Payment::class, 'reservasi_id');
     }
-    
 }
