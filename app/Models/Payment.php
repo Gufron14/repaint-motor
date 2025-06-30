@@ -16,7 +16,9 @@ class Payment extends Model
         'reservasi_id',
         'metode_pembayaran',
         'status_pembayaran',
-        'bukti_pembayaran'
+        'bukti_pembayaran',
+        'jumlah_bayar',
+        'jenis_pembayaran'
     ];
 
     public function reservasi()

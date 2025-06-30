@@ -11,9 +11,9 @@
                 @endif
 
                 <div class="mb-3">
-                    <label>Email</label>
-                    <input type="email" wire:model="email" class="form-control @error('email') is-invalid @enderror" placeholder="hypeproject@example.com">
-                    @error('email')
+                    <label>Username</label>
+                    <input type="text" wire:model="username" wire:input='normalizeUsername' class="form-control @error('username') is-invalid @enderror">
+                    @error('username')
                         <div class="invalid-feedback">
                             <i class="bi bi-exclamation-circle-fill me-1"></i>{{ $message }}
                         </div>

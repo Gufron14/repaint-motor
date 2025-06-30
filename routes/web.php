@@ -22,6 +22,7 @@ use App\Http\Controllers\User\UserAuthController;
 use App\Livewire\Admin\Portfolio as AdminPortfolio;
 use App\Http\Controllers\MidtransCallbackController;
 use App\Livewire\Admin\Reservasi\Index as ReservasiIndex;
+use App\Livewire\Reservasi\Payment;
 
 // USER
 // User Auth
@@ -48,6 +49,7 @@ Route::get('antrean', Antrean::class)->name('antrean');
 Route::middleware(['auth', 'role:user|admin'])->group(function () {
     Route::get('reservasi', Index::class)->name('reservasi');
     Route::get('riwayat', RiwayatReservasi::class)->name('riwayat.reservasi');
+    Route::get('pembayaran/{id}',  Payment::class)->name('payment');
 });
 
 

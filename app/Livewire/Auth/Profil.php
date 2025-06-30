@@ -11,39 +11,44 @@ use Livewire\Attributes\Title;
 class Profil extends Component
 {   
     public $name;
-    public $email;
+    public $username;
     public $phone;
+    public $password;
+public $password_confirmation;
 
     public function mount()
     {
         $user = Auth::user();
         $this->name = $user->name;
-        $this->email = $user->email;
+        $this->username = $user->username;
         $this->phone = $user->phone;
     }
+public function updateProfile()
+{
+    $validatedData = $this->validate([
+        'name' => 'required',
+        'username' => 'required',
+        'phone' => 'required|numeric|digits_between:1,12',
+        'password' => 'nullable|min:6|same:password_confirmation',
+        'password_confirmation' => 'nullable'
+    ]);
 
-    public function updateProfile()
-    {
-        $validatedData = $this->validate([
-            'name' => 'required',
-            'email' => 'required|email',
-            'phone' => 'required|numeric|digits_between:1,12',
-        ]);
-
-        // Ambil ulang user dari database
-        $user = User::find(Auth::id());
-        
-        if ($user) {
-            $user->name = $validatedData['name'];
-            $user->email = $validatedData['email'];
-            $user->phone = $validatedData['phone'];
-            $user->save(); // Simpan data baru ke database
-
-            session()->flash('success', 'Berhasil update profil');
-        } else {
-            session()->flash('error', 'User tidak ditemukan');
+    $user = User::find(Auth::id());
+    
+    if ($user) {
+        $user->name = $validatedData['name'];
+        $user->username = $validatedData['username'];
+        $user->phone = $validatedData['phone'];
+        if (!empty($validatedData['password'])) {
+            $user->password = bcrypt($validatedData['password']);
         }
+        $user->save();
+
+        session()->flash('success', 'Berhasil update profil');
+    } else {
+        session()->flash('error', 'User tidak ditemukan');
     }
+}
     
     public function render()
     {   

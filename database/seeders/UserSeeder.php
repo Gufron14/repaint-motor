@@ -16,7 +16,7 @@ class UserSeeder extends Seeder
         // Buat admin
         $admin = User::create([
             'name' => 'Admin',
-            'email' => 'hypeproject@admin.com',
+            'username' => 'admin',
             'phone' => '08123456780',
             'password' => bcrypt('password')
         ]);
@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
         // Buat user biasa
         $user = User::create([
             'name' => 'Habib Hakim Permana',
-            'email' => 'hakim@gmail.com',
+            'username' => 'hakim',
             'phone' => '08123456789',
             'password' => bcrypt('password'),
         ]);

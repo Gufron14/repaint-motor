@@ -29,9 +29,11 @@
     @include('components.navbar')
     {{-- @livewire('navbar') --}}
 
-    <div class="container p-5">
-        <div class="min-h-screen">
-            {{ $slot }}
+    <div class="container-fluid bg-light">
+        <div class="container p-5">
+            <div class="min-h-screen">
+                {{ $slot }}
+            </div>
         </div>
     </div>
 

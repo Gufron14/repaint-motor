@@ -9,11 +9,11 @@ use Livewire\Attributes\Title;
 #[Title('Login')]
 class Login extends Component
 {   
-    public $email;
+    public $username;
     public $password;
 
     protected $rules = [
-        'email' => 'required|email',
+        'username' => 'required',
         'password' => 'required'
     ];
 
@@ -21,16 +21,16 @@ class Login extends Component
     {
         $this->validate();
     
-        // Cek apakah email ada di database
-        $user = \App\Models\User::where('email', $this->email)->first();
+        // Cek apakah username ada di database
+        $user = \App\Models\User::where('username', $this->username)->first();
         
         if (!$user) {
-            session()->flash('error', 'Email tidak terdaftar');
+            session()->flash('error', 'username tidak terdaftar');
             return;
         }
         
-        // Jika email ada, cek password
-        if (Auth::attempt(['email' => $this->email, 'password' => $this->password])) {
+        // Jika username ada, cek password
+        if (Auth::attempt(['username' => $this->username, 'password' => $this->password])) {
             $user = Auth::user();
             
             if ($user->hasRole('admin')) {
@@ -39,10 +39,15 @@ class Login extends Component
                 return redirect()->route('/');
             }
         } else {
-            // Jika email benar tapi password salah
+            // Jika username benar tapi password salah
             session()->flash('error', 'Password yang Anda masukkan salah');
         }
     }
+
+    public function normalizeUsername()
+{
+    $this->username = strtolower(preg_replace('/\s+/', '', $this->username));
+}
     
 
     public function render()

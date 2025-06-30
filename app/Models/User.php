@@ -23,7 +23,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'email',
+        'username',
         'phone',
         'password',
     ];
@@ -37,6 +37,11 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+public function setUsernameAttribute($value)
+{
+    $this->attributes['username'] = strtolower(preg_replace('/\s+/', '', $value));
+}
 
     /**
      * The attributes that should be cast.

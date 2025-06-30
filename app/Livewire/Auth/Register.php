@@ -11,13 +11,13 @@ use Livewire\Attributes\Title;
 class Register extends Component
 {   
     public $name;
-    public $email;
+    public $username;
     public $phone;
     public $password;
 
     protected $rules = [
         'name' => 'required|min:3',
-        'email' => 'required|email|unique:users',
+        'username' => 'required|unique:users',
         'phone' => 'required|numeric|unique:users',
         'password' => 'required|min:6'
     ];
@@ -28,10 +28,11 @@ class Register extends Component
 
         $user = User::create([
             'name' => $this->name,
-            'email' => $this->email,
+            'username' => $this->username,
             'phone' => $this->phone,
             'password' => bcrypt($this->password)
         ]);
+        
 
         // Assign role user (customer) secara default
         $user->assignRole('user');
@@ -40,6 +41,11 @@ class Register extends Component
 
         return redirect()->route('login');
     }
+
+    public function normalizeUsername()
+{
+    $this->username = strtolower(preg_replace('/\s+/', '', $this->username));
+}
 
     public function render()
     {

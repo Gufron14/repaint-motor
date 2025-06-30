@@ -40,6 +40,8 @@ class Reservasi extends Model
         'status_bayar'
     ];
 
+    
+
     // Add method to calculate remaining payment
     public function getSisaBayarAttribute()
     {

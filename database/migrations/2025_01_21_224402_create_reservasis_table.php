@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('foto_knalpot')->nullable();
             $table->string('foto_cvt')->nullable();
             $table->string('nomor_polisi');
-            $table->string('catatan');
+            $table->string('catatan')->nullable();
             $table->decimal('total_harga', 10, 2); // Total harga yang dihitung
             $table->integer('estimasi_waktu'); // Estimasi waktu pengerjaan (dalam hari)
             $table->enum('status', ['pending', 'setuju', 'bongkar', 'cuci', 'amplas', 'dempul', 'epoxy', 'warna', 'permis', 'pasang', 'selesai', 'batal', 'tolak'])->default('pending'); // Status reservasi
