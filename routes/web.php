@@ -49,7 +49,6 @@ Route::get('antrean', Antrean::class)->name('antrean');
 Route::middleware(['auth', 'role:user|admin'])->group(function () {
     Route::get('reservasi', Index::class)->name('reservasi');
     Route::get('riwayat', RiwayatReservasi::class)->name('riwayat.reservasi');
-    Route::get('pembayaran/{id}',  Payment::class)->name('payment');
 });
 
 
