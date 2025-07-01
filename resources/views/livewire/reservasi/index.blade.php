@@ -84,24 +84,56 @@
                         <div>
                             <label for="" class="form-label text-secondary">Foto Motor</label>
                             <input type="file" wire:model='foto_motor' class="form-control">
+                            <div wire:loading wire:target="foto_motor" class="text-info small mt-1">
+                                <span class="spinner-border spinner-border-sm"></span> Mengunggah...
+                            </div>
+                            @if ($foto_motor)
+                                <div class="mt-2">
+                                    <img src="{{ $foto_motor->temporaryUrl() }}" alt="Preview Foto Motor" class="img-thumbnail" style="max-width: 150px;">
+                                </div>
+                            @endif
                         </div>
                     @endif
                     @if (in_array('4', $selectedRepaints))
                         <div>
                             <label for="foto_velg" class="form-label text-secondary">Foto Velg:</label>
                             <input type="file" wire:model='foto_velg' class="form-control">
+                            <div wire:loading wire:target="foto_velg" class="text-info small mt-1">
+                                <span class="spinner-border spinner-border-sm"></span> Mengunggah...
+                            </div>
+                            @if ($foto_velg)
+                                <div class="mt-2">
+                                    <img src="{{ $foto_velg->temporaryUrl() }}" alt="Preview Foto Velg" class="img-thumbnail" style="max-width: 150px;">
+                                </div>
+                            @endif
                         </div>
                     @endif
                     @if (in_array('5', $selectedRepaints))
                         <div>
                             <label for="foto_knalpot" class="form-label text-secondary">Foto Knalpot:</label>
                             <input type="file" wire:model='foto_knalpot' class="form-control">
+                            <div wire:loading wire:target="foto_knalpot" class="text-info small mt-1">
+                                <span class="spinner-border spinner-border-sm"></span> Mengunggah...
+                            </div>
+                            @if ($foto_knalpot)
+                                <div class="mt-2">
+                                    <img src="{{ $foto_knalpot->temporaryUrl() }}" alt="Preview Foto Knalpot" class="img-thumbnail" style="max-width: 150px;">
+                                </div>
+                            @endif
                         </div>
                     @endif
                     @if (in_array('6', $selectedRepaints))
                         <div>
                             <label for="foto_cvt" class="form-label text-secondary">Foto CVT:</label>
                             <input type="file" wire:model='foto_cvt' class="form-control">
+                            <div wire:loading wire:target="foto_cvt" class="text-info small mt-1">
+                                <span class="spinner-border spinner-border-sm"></span> Mengunggah...
+                            </div>
+                            @if ($foto_cvt)
+                                <div class="mt-2">
+                                    <img src="{{ $foto_cvt->temporaryUrl() }}" alt="Preview Foto CVT" class="img-thumbnail" style="max-width: 150px;">
+                                </div>
+                            @endif
                         </div>
                     @endif
                 </div>
@@ -264,19 +296,19 @@
                         </div>
                     @endif
                     
-                    {{-- @if (session()->has('error'))
+                   {{-- @if (session()->has('error'))
                         <div class="alert alert-danger">
                             {{ session('error') }}
                         </div>
                     @endif --}}
                     
                     <!-- Debug info untuk development -->
-                    {{-- @if (app()->environment('local'))
+                    @if (app()->environment('local'))
                     <div class="alert alert-info">
                         <p><strong>Info:</strong></p>
                         <p>Reservasi {{ $reservasiTersimpan ? 'Berhasil' : 'Tidak' }} Tersimpan</p>
                     </div>
-                    @endif --}}
+                    @endif
 
                     <div class="mb-3">
                         <p class="fw-bold h4">Total Pembayaran DP 10%: Rp. {{ number_format($dpHarga, 0, ',', '.') }}</p>

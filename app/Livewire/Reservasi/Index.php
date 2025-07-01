@@ -189,6 +189,18 @@ class Index extends Component
     public function reservasi()
     {
         try {
+                    $existingReservasi = Reservasi::where('user_id', Auth::id())
+            ->where('status', 'pending')
+            ->whereDoesntHave('payment', function ($q) {
+                $q->whereNotNull('bukti_pembayaran');
+            })
+            ->first();
+
+        if ($existingReservasi) {
+            session()->flash('error', 'Anda sudah memiliki reservasi yang belum mengupload bukti pembayaran. Silakan upload bukti pembayaran terlebih dahulu di halaman Riwayat Reservasi.');
+            return;
+        }
+
             $this->validate([
                 'selectedKategori' => 'required',
                 'selectedTipe' => 'required',

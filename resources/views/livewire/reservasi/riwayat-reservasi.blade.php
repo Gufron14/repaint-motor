@@ -73,7 +73,7 @@
                         </div>
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center flex-wrap">
-                                <h4 class="mb-0 fw-bold">
+                                <h4 class="mb-0 fw-bold me-2">
                                     {{ $item->tipeMotor->nama_motor }}:
                                     @if (is_array($item->jenisRepaint) && count($item->jenisRepaint) > 0)
                                         {{ implode(', ', $item->jenisRepaint) }}
@@ -81,6 +81,10 @@
                                         Data tidak tersedia
                                     @endif
                                 </h4>
+                                <button type="button" class="btn btn-success btn-sm" id="tambahModal" tabindex="-1"
+                                    aria-labelledby="tambahModalLabel" aria-hidden="true">
+                                    <i class="bi bi-plus-square"></i>tambah komponen
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -88,8 +92,12 @@
                         <div class="card border-warning">
                             <div class="card-body text-warning fw-bold">
                                 <label for="" class="form-label text-secondary text-uppercase">dp 10%</label>
-                                <span><a href="" data-bs-toggle="modal" data-bs-target="#imageModal"><i
-                                            class="bi bi-eye-fill"></i></a></span>
+                                <span>
+                                    <a href="#" data-bs-toggle="modal"
+                                        data-bs-target="#imageModal{{ $item->id }}">
+                                        <i class="bi bi-eye-fill"></i>
+                                    </a>
+                                </span>
                                 <h5 class="mb-0 fw-bold">
                                     Rp{{ number_format($item->total_harga * 0.1, 0, ',', '.') }}
                                 </h5>
@@ -110,8 +118,12 @@
                             <div class="card-body text-success fw-bold">
                                 <label for="" class="form-label text-secondary text-uppercase">total
                                     harga</label>
-                                <span><a href="" data-bs-toggle="modal" data-bs-target="#exampleModal""><i
-                                            class="bi bi-eye-fill"></i></a></span>
+                                <span>
+                                    <a href="#" data-bs-toggle="modal"
+                                        data-bs-target="#exampleModal{{ $item->id }}">
+                                        <i class="bi bi-eye-fill"></i>
+                                    </a>
+                                </span>
                                 <h5 class="mb-0 fw-bold">
                                     Rp{{ number_format($item->total_harga, 0, ',', '.') }}
                                 </h5>
@@ -119,6 +131,12 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- Tambah Komponen --}}
+
+
+
+                {{-- End --}}
 
                 <div class="d-flex gap-3">
                     <div class="alert alert-warning text-center" role="alert">
@@ -153,10 +171,14 @@
                             @endif
                         </strong>
                     </div>
-                    <div class="alert alert-info text-center" role="alert">
-                        Estimasi waktu pengerjaan <strong>{{ $item->estimasi_waktu }} hari</strong> sampai dengan
-                        <strong>{{ \Carbon\Carbon::parse($item->created_at)->addDays($item->estimasi_waktu)->locale('id')->isoFormat('dddd, D MMMM Y') }}</strong>
-                    </div>
+
+                    @if ($item->status === 'batal' || $item->status === 'selesai')
+                    @else
+                        <div class="alert alert-info text-center" role="alert">
+                            Estimasi waktu pengerjaan <strong>{{ $item->estimasi_waktu }} hari</strong> sampai dengan
+                            <strong>{{ \Carbon\Carbon::parse($item->created_at)->addDays($item->estimasi_waktu)->locale('id')->isoFormat('dddd, D MMMM Y') }}</strong>
+                        </div>
+                    @endif
 
                 </div>
 
@@ -196,12 +218,21 @@
                         <small><span>{{ $item->created_at->format('d/m/Y H:i') }} WIB</span></small>
                     </div>
                     <div>
-                        @if ($item->status == 'pending')
+                        <div>
+                            @if ($item->status == 'pending')
                             <button wire:click="batalkanReservasi({{ $item->id }})"
-                                wire:confirm="Yakin ingin membatalkan reservasi?" class="btn btn-danger fw-bold">
+                                wire:confirm="Yakin ingin membatalkan reservasi?"
+                                class="btn btn-danger fw-bold">
                                 Batalkan Reservasi
                             </button>
-                        @endif
+                                @if (!$item->payment || !$item->payment->bukti_pembayaran)
+                                    <button class="btn btn-success fw-bold ms-2" data-bs-toggle="modal"
+                                        data-bs-target="#modalPembayaran{{ $item->id }}">
+                                        Bayar Sekarang
+                                    </button>
+                                @endif
+                            @endif
+                        </div>
                     </div>
                 </div>
 
@@ -234,20 +265,32 @@
             tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <!-- Modal header remains the same -->
-
+                    <div class="modal-header">
+                        <h5 class="modal-title">Upload Bukti Pembayaran</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
                     <div class="modal-body">
-                        <!-- Alert messages remain the same -->
+                        @if (session()->has('message'))
+                            <div class="alert alert-success">
+                                {{ session('message') }}
+                            </div>
+                        @endif
+                        @if (session()->has('error'))
+                            <div class="alert alert-danger">
+                                {{ session('error') }}
+                            </div>
+                        @endif
 
                         <div class="mb-3">
-                            <p class="fw-bold h4">Total Pembayaran:
-                                Rp{{ number_format($item->total_harga, 0, ',', '.') }}
-                            </p>
-                            <!-- Bank details remain the same -->
+                            <p class="fw-bold h4">Total Pembayaran DP 10%: Rp.
+                                {{ number_format($item->total_harga * 0.1, 0, ',', '.') }}</p>
+                            <p>Silahkan transfer ke rekening:</p>
+                            <ul>
+                                <li class="fw-bold">BCA: 1234567890 (A/N Hype Custom Project)</li>
+                            </ul>
                         </div>
-
                         <div class="mb-3">
-                            <label class="form-label">Upload Bukti Transfer</label>
+                            <label class="form-label text-secondary">Upload Bukti Transfer</label>
                             <input type="file" class="form-control @error('bukti_pembayaran') is-invalid @enderror"
                                 wire:model="bukti_pembayaran">
                             @error('bukti_pembayaran')
@@ -255,11 +298,12 @@
                             @enderror
                         </div>
                     </div>
-
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="button" class="btn btn-primary"
-                            wire:click="submitPembayaran({{ $item->id }})">Kirim</button>
+                        <button type="button" class="btn btn-primary fw-bold"
+                            wire:click="submitPembayaran({{ $item->id }})">
+                            Kirim
+                        </button>
                     </div>
                 </div>
             </div>
@@ -267,11 +311,13 @@
 
 
         {{-- Gambar bukti_pembayaran --}}
-        <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        {{-- Gambar bukti_pembayaran --}}
+        <div class="modal fade" id="imageModal{{ $item->id }}" tabindex="-1"
+            aria-labelledby="imageModalLabel{{ $item->id }}" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="imageModalLabel">Bukti Pembayaran</h5>
+                        <h5 class="modal-title" id="imageModalLabel{{ $item->id }}">Bukti Pembayaran</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
@@ -291,12 +337,12 @@
         </div>
 
         {{-- Modal Rincian Biaya --}}
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
+        <div class="modal fade" id="exampleModal{{ $item->id }}" tabindex="-1"
+            aria-labelledby="exampleModalLabel{{ $item->id }}" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Rincian Biaya</h1>
+                        <h1 class="modal-title fs-5" id="exampleModalLabel{{ $item->id }}">Rincian Biaya</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
@@ -320,11 +366,9 @@
                                         <td>Total Harga</td>
                                         <td>Rp{{ number_format($item->total_harga, 0, ',', '.') }}</td>
                                     </tr>
-
                                 </tbody>
                             </table>
                         </div>
-
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary fw-bold" data-bs-dismiss="modal">Tutup</button>
@@ -333,11 +377,34 @@
             </div>
         </div>
 
+        
+                <div class="modal fade" id="tambahModal" tabindex="-1" aria-labelledby="tambahModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="tambahModalLabel">Modal title</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                ...
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary">Save changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
     @empty
         <h3 class="text-center text-danger">
             <i class="bi bi-exclamation-circle ms-2"></i> Belum ada Reservasi.
         </h3>
         <div class="text-center">Silakan lakukan Reservasi</div>
     @endforelse
+
+    
 
 </div>
