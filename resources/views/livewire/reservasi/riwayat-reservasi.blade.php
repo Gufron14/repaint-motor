@@ -81,10 +81,7 @@
                                         Data tidak tersedia
                                     @endif
                                 </h4>
-                                <button type="button" class="btn btn-success btn-sm" id="tambahModal" tabindex="-1"
-                                    aria-labelledby="tambahModalLabel" aria-hidden="true">
-                                    <i class="bi bi-plus-square"></i>tambah komponen
-                                </button>
+                                <a href="{{ route('tambahKomponen', $item->id) }}">Tambah</a>
                             </div>
                         </div>
                     </div>

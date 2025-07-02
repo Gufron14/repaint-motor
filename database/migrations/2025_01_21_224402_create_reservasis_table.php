@@ -30,6 +30,7 @@ return new class extends Migration
             $table->decimal('total_harga', 10, 2); // Total harga yang dihitung
             $table->integer('estimasi_waktu'); // Estimasi waktu pengerjaan (dalam hari)
             $table->enum('status', ['pending', 'setuju', 'bongkar', 'cuci', 'amplas', 'dempul', 'epoxy', 'warna', 'permis', 'pasang', 'selesai', 'batal', 'tolak'])->default('pending'); // Status reservasi
+            $table->enum('alasan_tolak', ['ganti', 'jumlah_dp', 'lainnya'])->nullable();
             $table->timestamps(); // Kolom created_at dan updated_at
         });
     }

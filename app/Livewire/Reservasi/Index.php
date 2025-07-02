@@ -200,6 +200,7 @@ class Index extends Component
             session()->flash('error', 'Anda sudah memiliki reservasi yang belum mengupload bukti pembayaran. Silakan upload bukti pembayaran terlebih dahulu di halaman Riwayat Reservasi.');
             return;
         }
+        
 
             $this->validate([
                 'selectedKategori' => 'required',

@@ -11,9 +11,9 @@
             </div>
             {{-- generate username otomatis dari Nama--}}
             <div class="mb-3">
-                <label class="form-label">Username </label> <small class="text-secondary">(Gunakan untuk login)</small>
+                <label class="form-label">Username </label></small>
                 <input type="text" wire:model="username" wire:input='normalizeUsername' class="form-control">
-                <small class="text-secondary">Huruf kecil dan tanpa spasi!</small><br>
+                <small class="text-secondary">Kombinasi huruf kecil dan angka tanpa spasi</small><br>
                 @error('username')
                     <span class="text-danger">{{ $message }}</span>
                 @enderror
@@ -22,7 +22,7 @@
                 <label class="form-label">No. Telepon</label>
                 <input type="number" wire:model="phone" class="form-control">
                 @error('phone')
-                    <span class="text-danger">{{ $message }}</span>
+                    <small class="text-danger">{{ $message }}</small>
                 @enderror
             </div>
             <div class="mb-3">
