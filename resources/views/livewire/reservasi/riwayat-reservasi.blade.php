@@ -12,7 +12,7 @@
     <h3 class="fw-bold mb-3 text-center">Riwayat Reservasi</h3>
 
     @forelse ($reservasi as $index => $item)
-        <div class="card mx-auto mb-3 p-3">
+        <div class="card mx-auto shadow-sm border-0 mb-3 p-3">
             <div class="card-body">
                 <div class="mb-4">
                     @if ($item->status == 'pending')
@@ -84,11 +84,13 @@
                                         Data tidak tersedia
                                     @endif
                                 </h4>
-                                <a href="{{ route('reservasi') }}">Tambah Repaint</a>
+                                @if ($item->status === 'pending')
+                                    <a href="{{ route('tambahKomponen', $item->id) }}">Ubah Repaint</a>
+                                @endif
                             </div>
                         </div>
                     </div>
-                    @if ($item->status === 'batal')
+                    @if ($item->status === 'batal' || $item->status === 'tolak')
                     @else
                         <div class="col d-flex gap-2 align-items-center">
                             <div class="card border-warning">
@@ -170,12 +172,12 @@
                         </strong>
                     </div>
 
-                    @if ($item->status === 'batal' || $item->status === 'selesai')
-                        {{-- @if ($item->status === 'batal')                            
+                    @if ($item->status === 'batal' || $item->status === 'selesai' || $item->status === 'tolak')
+                        @if (in_array($item->status, ['batal', 'tolak']) && $item->payment && $item->payment->bukti_pembayaran)
                             <div class="alert alert-info text-center" role="alert">
-                                Reservasi dibatalkan dengan alasan {{ $item->penolakan->keterangan }}
+                                Pengembalian Dana akan dikirim ke <strong>{{ $item->user->no_rek }}</strong>  dalam waktu kurang lebih 24 Jam. Pastikan nomor rekening/e-wallet Benar.
                             </div>
-                        @endif --}}
+                        @endif
                     @else
                         <div class="alert alert-info text-center" role="alert">
                             Estimasi waktu pengerjaan <strong>{{ $item->estimasi_waktu }} hari</strong> sampai dengan

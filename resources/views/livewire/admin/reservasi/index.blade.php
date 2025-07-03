@@ -14,10 +14,7 @@
                     <th>Customer</th>
                     <th>Reservasi</th>
                     <th>Status Proses</th>
-                    @if (
-                        ($reservasi->first() && $reservasi->first()->payment && $reservasi->first()->payment->bukti_pengembalian) ||
-                            $reservasi->first()->status === 'tolak' ||
-                            $reservasi->first()->status === 'batal')
+                    @if (in_array($reservasi->first()?->status, ['tolak', 'batal']) && $reservasi->first()?->payment)
                         <th>Pengembalian Dana</th>
                     @endif
                     <th>DP 10%</th>
@@ -77,15 +74,16 @@
                             @endif
 
                         </td>
-                        @if ($item->payment->bukti_pengembalian || $item->status === 'tolak' || $item->status === 'batal')
+                        @if (in_array($item->status, ['tolak', 'batal']) && $item->payment)
                             <td class="align-middle">
-                                @if (!$item->payment->status_pengembalian)
+                                @if (!$item->payment->bukti_pengembalian)
                                     <span class="badge badge-danger">Belum Dikembalikan</span>
                                 @else
                                     <span class="badge badge-success">Dikembalikan</span>
                                 @endif
                             </td>
                         @endif
+
                         <td class="align-middle">
                             @if ($item->payment && $item->payment->bukti_pembayaran)
                                 <span class="badge text-bg-success">Sudah Bayar</span>
@@ -124,48 +122,50 @@
                                                 </a>
                                             </li>
                                         @endif
-                                        
-                                            @if ($item->status != 'pending' && !in_array($item->status, ['tolak', 'batal', 'selesai']))
-                                        <li><button wire:click="updateStatus({{ $item->id }}, 'bongkar')"
-                                                class="dropdown-item"
-                                                {{ $item->status != 'setuju' ? 'disabled' : '' }}>Proses
-                                                Pembongkaran</button></li>
-                                        <li><button wire:click="updateStatus({{ $item->id }}, 'cuci')"
-                                                class="dropdown-item"
-                                                {{ $item->status != 'bongkar' ? 'disabled' : '' }}>Proses
-                                                Pencucian</button></li>
-                                        <li><button wire:click="updateStatus({{ $item->id }}, 'amplas')"
-                                                class="dropdown-item"
-                                                {{ $item->status != 'cuci' ? 'disabled' : '' }}>Proses
-                                                Pengamplasan</button></li>
-                                        <li><button wire:click="updateStatus({{ $item->id }}, 'dempul')"
-                                                class="dropdown-item"
-                                                {{ $item->status != 'amplas' ? 'disabled' : '' }}>Proses
-                                                Pendempulan</button></li>
-                                        <li><button wire:click="updateStatus({{ $item->id }}, 'epoxy')"
-                                                class="dropdown-item"
-                                                {{ $item->status != 'dempul' ? 'disabled' : '' }}>Proses Epoxy</button>
-                                        </li>
-                                        <li><button wire:click="updateStatus({{ $item->id }}, 'warna')"
-                                                class="dropdown-item"
-                                                {{ $item->status != 'epoxy' ? 'disabled' : '' }}>Proses Naik
-                                                Warna</button></li>
-                                        <li><button wire:click="updateStatus({{ $item->id }}, 'permis')"
-                                                class="dropdown-item"
-                                                {{ $item->status != 'warna' ? 'disabled' : '' }}>Proses Permis</button>
-                                        </li>
-                                        <li><button wire:click="updateStatus({{ $item->id }}, 'pasang')"
-                                                class="dropdown-item"
-                                                {{ $item->status != 'permis' ? 'disabled' : '' }}>Proses
-                                                Pemasangan</button></li>
-                                        <li><button wire:click="updateStatus({{ $item->id }}, 'selesai')"
-                                                class="dropdown-item"
-                                                {{ $item->status != 'pasang' ? 'disabled' : '' }}><span
-                                                    class="badge text-bg-success">Selesai</span></button></li>
-                                        <li><button wire:click="updateStatus({{ $item->id }}, 'batal')"
-                                                class="dropdown-item text-danger"><span
-                                                    class="badge text-bg-danger">Batalkan</span></button></li>
-                                    @endif
+
+                                        @if ($item->status != 'pending' && !in_array($item->status, ['tolak', 'batal', 'selesai']))
+                                            <li><button wire:click="updateStatus({{ $item->id }}, 'bongkar')"
+                                                    class="dropdown-item"
+                                                    {{ $item->status != 'setuju' ? 'disabled' : '' }}>Proses
+                                                    Pembongkaran</button></li>
+                                            <li><button wire:click="updateStatus({{ $item->id }}, 'cuci')"
+                                                    class="dropdown-item"
+                                                    {{ $item->status != 'bongkar' ? 'disabled' : '' }}>Proses
+                                                    Pencucian</button></li>
+                                            <li><button wire:click="updateStatus({{ $item->id }}, 'amplas')"
+                                                    class="dropdown-item"
+                                                    {{ $item->status != 'cuci' ? 'disabled' : '' }}>Proses
+                                                    Pengamplasan</button></li>
+                                            <li><button wire:click="updateStatus({{ $item->id }}, 'dempul')"
+                                                    class="dropdown-item"
+                                                    {{ $item->status != 'amplas' ? 'disabled' : '' }}>Proses
+                                                    Pendempulan</button></li>
+                                            <li><button wire:click="updateStatus({{ $item->id }}, 'epoxy')"
+                                                    class="dropdown-item"
+                                                    {{ $item->status != 'dempul' ? 'disabled' : '' }}>Proses
+                                                    Epoxy</button>
+                                            </li>
+                                            <li><button wire:click="updateStatus({{ $item->id }}, 'warna')"
+                                                    class="dropdown-item"
+                                                    {{ $item->status != 'epoxy' ? 'disabled' : '' }}>Proses Naik
+                                                    Warna</button></li>
+                                            <li><button wire:click="updateStatus({{ $item->id }}, 'permis')"
+                                                    class="dropdown-item"
+                                                    {{ $item->status != 'warna' ? 'disabled' : '' }}>Proses
+                                                    Permis</button>
+                                            </li>
+                                            <li><button wire:click="updateStatus({{ $item->id }}, 'pasang')"
+                                                    class="dropdown-item"
+                                                    {{ $item->status != 'permis' ? 'disabled' : '' }}>Proses
+                                                    Pemasangan</button></li>
+                                            <li><button wire:click="updateStatus({{ $item->id }}, 'selesai')"
+                                                    class="dropdown-item"
+                                                    {{ $item->status != 'pasang' ? 'disabled' : '' }}><span
+                                                        class="badge text-bg-success">Selesai</span></button></li>
+                                            <li><button wire:click="updateStatus({{ $item->id }}, 'batal')"
+                                                    class="dropdown-item text-danger"><span
+                                                        class="badge text-bg-danger">Batalkan</span></button></li>
+                                        @endif
 
                                     </ul>
                                 </div>

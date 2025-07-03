@@ -14,9 +14,10 @@ use App\Models\KategoriMotor;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
-#[Title('Reservasi')]
-class Index extends Component
+#[Title('Update Reservasi')]
+class UpdateReservasi extends Component
 {
     use WithFileUploads;
 
@@ -38,6 +39,12 @@ class Index extends Component
     public $nomor_polisi;
     public $catatan;
 
+    // Existing photos
+    public $existing_foto_motor;
+    public $existing_foto_velg;
+    public $existing_foto_knalpot;
+    public $existing_foto_cvt;
+
     // Harga Repaint
     public $totalHarga = 0;
     public $estimasiWaktu = 0;
@@ -46,6 +53,7 @@ class Index extends Component
 
     // Reservasi
     public $reservasiId;
+    public $reservasi;
     public $snapToken;
 
     public $availableFullBodyTypes = [];
@@ -55,19 +63,92 @@ class Index extends Component
     public $availableKnalpotTypes = [];
     public $availableCVTTypes = [];
 
-    public $reservasiTersimpan = false; // Cek apakah reservasi sudah tersimpan
+    public $reservasiTersimpan = false;
+
+    // Payment
+    public $existingPayment;
+    public $originalTotalHarga = 0;
+    public $additionalPayment = 0;
+    public $showPaymentModal = false;
 
     protected $rules = [
         'selectedKategori' => 'required',
         'selectedTipe' => 'required',
         'selectedRepaints' => 'required|array|min:1|max:2',
-        'bukti_pembayaran' => 'required|image|max:2048',
+        'bukti_pembayaran' => 'nullable|image|max:2048',
     ];
 
-    public function mount()
+    public function mount($id)
     {
         $this->kategoriMotor = KategoriMotor::all();
         $this->jenisRepaint = JenisRepaint::all();
+
+        // Load existing reservasi data
+        $this->reservasi = Reservasi::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+
+        $this->reservasiId = $this->reservasi->id;
+        $this->loadExistingData();
+    }
+
+    public function loadExistingData()
+    {
+        // Load existing data into form fields
+        $this->selectedKategori = $this->reservasi->kategori_motor_id;
+        $this->selectedTipe = $this->reservasi->tipe_motor_id;
+        $this->selectedRepaints = json_decode($this->reservasi->jenis_repaint_id, true) ?? [];
+        $this->warna_body = $this->reservasi->warna_body;
+        $this->warna_velg = $this->reservasi->warna_velg;
+        $this->warna_knalpot = $this->reservasi->warna_knalpot;
+        $this->warna_cvt = $this->reservasi->warna_cvt;
+        $this->nomor_polisi = $this->reservasi->nomor_polisi;
+        $this->catatan = $this->reservasi->catatan;
+        $this->totalHarga = $this->reservasi->total_harga;
+        $this->estimasiWaktu = $this->reservasi->estimasi_waktu;
+        $this->dpHarga = $this->totalHarga * 0.1;
+
+        // Store existing photo paths
+        $this->existing_foto_motor = $this->reservasi->foto_motor;
+        $this->existing_foto_velg = $this->reservasi->foto_velg;
+        $this->existing_foto_knalpot = $this->reservasi->foto_knalpot;
+        $this->existing_foto_cvt = $this->reservasi->foto_cvt;
+
+        // Load tipe motor based on selected kategori
+        if ($this->selectedKategori) {
+            $this->tipeMotor = TipeMotor::where('kategori_motor_id', $this->selectedKategori)->get();
+        }
+
+        // Load available types for selected tipe
+        if ($this->selectedTipe) {
+            $this->loadAvailableTypes();
+        }
+
+        $this->reservasiTersimpan = true;
+
+        $this->originalTotalHarga = $this->reservasi->total_harga;
+        $this->existingPayment = Payment::where('reservasi_id', $this->reservasiId)->first();
+    }
+
+    public function calculateAdditionalPayment()
+    {
+        if ($this->existingPayment) {
+            // Jika sudah ada pembayaran, hitung selisih dari total harga baru
+            $this->additionalPayment = $this->totalHarga - $this->originalTotalHarga;
+        } else {
+            // Jika belum ada pembayaran, bayar DP 10%
+            $this->additionalPayment = $this->dpHarga;
+        }
+    }
+
+    public function loadAvailableTypes()
+    {
+        $motorRepaints = MotorRepaint::where('tipe_motor_id', $this->selectedTipe)->get();
+
+        $this->availableFullBodyTypes = $motorRepaints->where('jenis_repaint_id', 1)->pluck('tipe_motor_id')->toArray();
+        $this->availableBodyHalusTypes = $motorRepaints->where('jenis_repaint_id', 2)->pluck('tipe_motor_id')->toArray();
+        $this->availableBodyKasarTypes = $motorRepaints->where('jenis_repaint_id', 3)->pluck('tipe_motor_id')->toArray();
+        $this->availableVelgTypes = $motorRepaints->where('jenis_repaint_id', 4)->pluck('tipe_motor_id')->toArray();
+        $this->availableKnalpotTypes = $motorRepaints->where('jenis_repaint_id', 5)->pluck('tipe_motor_id')->toArray();
+        $this->availableCVTTypes = $motorRepaints->where('jenis_repaint_id', 6)->pluck('tipe_motor_id')->toArray();
     }
 
     public function resetForm()
@@ -94,18 +175,8 @@ class Index extends Component
     public function updatedSelectedTipe($value)
     {
         if ($value) {
-            // Ambil data jenis repaint yang tersedia untuk tipe motor yang dipilih
-            $motorRepaints = MotorRepaint::where('tipe_motor_id', $value)->get();
-
-            // Update array tipe yang tersedia untuk setiap jenis repaint
-            $this->availableFullBodyTypes = $motorRepaints->where('jenis_repaint_id', 1)->pluck('tipe_motor_id')->toArray();
-            $this->availableBodyHalusTypes = $motorRepaints->where('jenis_repaint_id', 2)->pluck('tipe_motor_id')->toArray();
-            $this->availableBodyKasarTypes = $motorRepaints->where('jenis_repaint_id', 3)->pluck('tipe_motor_id')->toArray();
-            $this->availableVelgTypes = $motorRepaints->where('jenis_repaint_id', 4)->pluck('tipe_motor_id')->toArray();
-            $this->availableKnalpotTypes = $motorRepaints->where('jenis_repaint_id', 5)->pluck('tipe_motor_id')->toArray();
-            $this->availableCVTTypes = $motorRepaints->where('jenis_repaint_id', 6)->pluck('tipe_motor_id')->toArray();
+            $this->loadAvailableTypes();
         }
-
         $this->resetCalculation();
     }
 
@@ -158,26 +229,27 @@ class Index extends Component
     }
 
     public function calculateTotal()
-    {
-        $this->totalHarga = 0;
-        $this->dpHarga = 0;
-        $this->estimasiWaktu = 0;
+{
+    $this->totalHarga = 0;
+    $this->dpHarga = 0;
+    $this->estimasiWaktu = 0;
 
-        if (!empty($this->selectedRepaints)) {
-            $repaints = JenisRepaint::whereIn('id', $this->selectedRepaints)->get();
+    if (!empty($this->selectedRepaints)) {
+        $repaints = JenisRepaint::whereIn('id', $this->selectedRepaints)->get();
 
-            foreach ($repaints as $repaint) {
-                $motorRepaint = MotorRepaint::where('tipe_motor_id', $this->selectedTipe)->where('jenis_repaint_id', $repaint->id)->first();
+        foreach ($repaints as $repaint) {
+            $motorRepaint = MotorRepaint::where('tipe_motor_id', $this->selectedTipe)->where('jenis_repaint_id', $repaint->id)->first();
 
-                if ($motorRepaint) {
-                    $this->totalHarga += $motorRepaint->harga;
-                    $this->estimasiWaktu += $motorRepaint->estimasi_waktu;
-                }
+            if ($motorRepaint) {
+                $this->totalHarga += $motorRepaint->harga;
+                $this->estimasiWaktu += $motorRepaint->estimasi_waktu;
             }
-
-            $this->dpHarga = $this->totalHarga * 0.1;
         }
+
+        $this->dpHarga = $this->totalHarga * 0.1;
+        $this->calculateAdditionalPayment(); // Tambahkan ini
     }
+}
 
     public function resetCalculation()
     {
@@ -186,22 +258,16 @@ class Index extends Component
         $this->estimasiWaktu = 0;
     }
 
-    public function reservasi()
+    public function openPaymentModal()
+    {
+        $this->calculateAdditionalPayment();
+        $this->showPaymentModal = true;
+        $this->dispatch('openPaymentModal');
+    }
+
+    public function updateReservasi()
     {
         try {
-            $existingReservasi = Reservasi::where('user_id', Auth::id())
-            ->where('status', 'pending')
-            ->whereDoesntHave('payment', function ($q) {
-                $q->whereNotNull('bukti_pembayaran');
-            })
-            ->first();
-
-        if ($existingReservasi) {
-            session()->flash('error', 'Anda sudah memiliki reservasi yang belum mengupload bukti pembayaran. Silakan upload bukti pembayaran terlebih dahulu di halaman Riwayat Reservasi.');
-            return;
-        }
-        
-
             $this->validate([
                 'selectedKategori' => 'required',
                 'selectedTipe' => 'required',
@@ -218,35 +284,45 @@ class Index extends Component
                 'catatan' => 'required',
             ]);
 
-            // Simpan file foto_motor jika ada
-            $foto_motor_path = null;
+            // Handle file uploads - only update if new files are uploaded
+            $foto_motor_path = $this->existing_foto_motor;
             if ($this->foto_motor) {
+                // Delete old file if exists
+                if ($this->existing_foto_motor) {
+                    Storage::disk('public')->delete($this->existing_foto_motor);
+                }
                 $foto_motor_path = $this->foto_motor->store('foto-motor', 'public');
             }
 
-            // Simpan file foto_velg jika ada
-            $foto_velg_path = null;
+            $foto_velg_path = $this->existing_foto_velg;
             if ($this->foto_velg) {
+                if ($this->existing_foto_velg) {
+                    Storage::disk('public')->delete($this->existing_foto_velg);
+                }
                 $foto_velg_path = $this->foto_velg->store('foto-velg', 'public');
             }
 
-            // Simpan file foto_knalpot jika ada
-            $foto_knalpot_path = null;
+            $foto_knalpot_path = $this->existing_foto_knalpot;
             if ($this->foto_knalpot) {
+                if ($this->existing_foto_knalpot) {
+                    Storage::disk('public')->delete($this->existing_foto_knalpot);
+                }
                 $foto_knalpot_path = $this->foto_knalpot->store('foto-knalpot', 'public');
             }
 
-            // Simpan file foto_cvt jika ad
-            $foto_cvt_path = null;
+            $foto_cvt_path = $this->existing_foto_cvt;
             if ($this->foto_cvt) {
+                if ($this->existing_foto_cvt) {
+                    Storage::disk('public')->delete($this->existing_foto_cvt);
+                }
                 $foto_cvt_path = $this->foto_cvt->store('foto-cvt', 'public');
             }
 
-            $reservasi = Reservasi::create([
-                'user_id' => Auth::id(),
+            // Update reservasi
+            $this->reservasi->update([
                 'kategori_motor_id' => $this->selectedKategori,
                 'tipe_motor_id' => $this->selectedTipe,
-                'jenis_repaint_id' => $this->selectedRepaints,
+                'jenis_repaint_id' => json_encode($this->selectedRepaints),
                 'warna_body' => $this->warna_body,
                 'warna_velg' => $this->warna_velg,
                 'warna_knalpot' => $this->warna_knalpot,
@@ -259,120 +335,36 @@ class Index extends Component
                 'catatan' => $this->catatan,
                 'total_harga' => $this->totalHarga,
                 'estimasi_waktu' => $this->estimasiWaktu,
-                'status' => 'pending',
             ]);
 
-            // Log untuk debugging
-            \Log::info('Reservasi created with ID: ' . $reservasi->id);
+            // Update existing photo paths
+            $this->existing_foto_motor = $foto_motor_path;
+            $this->existing_foto_velg = $foto_velg_path;
+            $this->existing_foto_knalpot = $foto_knalpot_path;
+            $this->existing_foto_cvt = $foto_cvt_path;
 
-            $reservasi->update([
-                'jenis_repaint_id' => json_encode($this->selectedRepaints),
-            ]);
+            // Reset file inputs
+            $this->reset(['foto_motor', 'foto_velg', 'foto_knalpot', 'foto_cvt']);
 
-            $this->reservasiId = $reservasi->id;
-            $this->reservasiTersimpan = true; // Tandai bahwa reservasi sudah tersimpan
-
-            // Log untuk debugging
-            \Log::info('ReservasiId set to: ' . $this->reservasiId);
-
-            // Buat Snap Token dari Midtrans
-            $this->createSnapToken($reservasi);
-
-            session()->flash('message', 'Reservasi berhasil disimpan! Silakan lanjutkan ke pembayaran.');
-
-            $this->dispatch('openPaymentModal');
+            // Jika ada pembayaran tambahan, buka modal pembayaran
+            if ($this->additionalPayment > 0) {
+                $this->openPaymentModal();
+                session()->flash('message', 'Reservasi berhasil diupdate! Silakan lakukan pembayaran tambahan.');
+            } else {
+                session()->flash('message', 'Reservasi berhasil diupdate!');
+                return redirect()->route('riwayat.reservasi');
+            }
         } catch (\Exception $e) {
-            // Log error untuk debugging
-            \Log::error('Error in reservasi method: ' . $e->getMessage());
+            \Log::error('Error in updateReservasi method: ' . $e->getMessage());
             \Log::error('Error trace: ' . $e->getTraceAsString());
 
             session()->flash('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
-    public function createSnapToken($reservasi)
+    public function submitAdditionalPayment()
     {
         try {
-            $user = Auth::user();
-
-            // Make sure Midtrans is properly configured
-            \Midtrans\Config::$serverKey = config('midtrans.server_key');
-            \Midtrans\Config::$isProduction = (bool) config('midtrans.is_production');
-            \Midtrans\Config::$isSanitized = true;
-            \Midtrans\Config::$is3ds = true;
-
-            $transaction_details = [
-                'order_id' => 'REPAINT-' . $reservasi->id . '-' . time(),
-                'gross_amount' => (int) $this->totalHarga,
-            ];
-
-            $customer_details = [
-                'first_name' => $user->name,
-                'email' => $user->email,
-            ];
-
-            $transaction = [
-                'transaction_details' => $transaction_details,
-                'customer_details' => $customer_details,
-            ];
-
-            // Tambahkan log untuk debugging
-            \Log::info('Creating Snap Token with data:', $transaction);
-
-            $snapToken = Snap::getSnapToken($transaction);
-            \Log::info('Snap Token created: ' . $snapToken);
-
-            // Simpan snap token ke database
-            $payment = Payment::create([
-                'reservasi_id' => $reservasi->id,
-                'metode_pembayaran' => 'midtrans',
-                'status_pembayaran' => 'pending',
-                'snap_token' => $snapToken,
-            ]);
-
-            $this->snapToken = $snapToken;
-
-            // Tambahkan log untuk memastikan snapToken tersimpan
-            \Log::info('Snap Token saved to component: ' . $this->snapToken);
-
-            // Dispatch event to refresh the UI
-            $this->dispatch('snapTokenGenerated', ['token' => $snapToken]);
-        } catch (\Exception $e) {
-            \Log::error('Error creating Snap Token: ' . $e->getMessage());
-            \Log::error('Error trace: ' . $e->getTraceAsString());
-            session()->flash('error', 'Terjadi kesalahan: ' . $e->getMessage());
-        }
-    }
-
-    public function refreshSnapToken()
-    {
-        if ($this->reservasiId) {
-            $reservasi = Reservasi::find($this->reservasiId);
-            if ($reservasi) {
-                $this->createSnapToken($reservasi);
-                $this->dispatch('snapTokenRefreshed');
-            }
-        }
-    }
-
-    public function handleModalClose()
-    {
-        // Reset hanya field bukti pembayaran
-        $this->reset('bukti_pembayaran');
-        // Pertahankan data formulir lainnya
-    }
-
-    public function submitPembayaran()
-    {
-        try {
-            // Debug info
-            \Log::info('submitPembayaran called with reservasiId: ' . ($this->reservasiId ?? 'null'));
-
-            if (!$this->reservasiId) {
-                session()->flash('error', 'ID Reservasi tidak ditemukan. Silakan buat reservasi terlebih dahulu.');
-                return;
-            }
-
             if (!$this->bukti_pembayaran) {
                 session()->flash('error', 'File bukti pembayaran tidak ditemukan.');
                 return;
@@ -380,36 +372,36 @@ class Index extends Component
 
             $filename = $this->bukti_pembayaran->store('bukti-pembayaran', 'public');
 
-            // Debug info
-            \Log::info('Creating payment with reservasi_id: ' . $this->reservasiId);
-
-            $payment = Payment::create([
+            // Buat payment baru untuk pembayaran tambahan
+            Payment::create([
                 'reservasi_id' => $this->reservasiId,
                 'metode_pembayaran' => 'transfer',
                 'status_pembayaran' => 'pending',
                 'bukti_pembayaran' => $filename,
+                'jumlah_pembayaran' => $this->additionalPayment,
+                'keterangan' => 'Pembayaran tambahan untuk update reservasi',
             ]);
 
-            // Debug info
-            \Log::info('Payment created with ID: ' . $payment->id);
-
-            session()->flash('success', 'Reservasi berhasil dikirim!');
+            session()->flash('success', 'Pembayaran tambahan berhasil dikirim!');
             $this->reset('bukti_pembayaran');
+            $this->showPaymentModal = false;
 
-            // Redirect ke home
             return redirect()->route('riwayat.reservasi');
         } catch (\Exception $e) {
-            // Log error untuk debugging
-            \Log::error('Error in submitPembayaran: ' . $e->getMessage());
-            \Log::error('Error trace: ' . $e->getTraceAsString());
-
+            \Log::error('Error in submitAdditionalPayment: ' . $e->getMessage());
             session()->flash('error', 'Terjadi kesalahan saat menyimpan pembayaran: ' . $e->getMessage());
         }
     }
 
+    public function closePaymentModal()
+    {
+        $this->showPaymentModal = false;
+        $this->reset('bukti_pembayaran');
+    }
+
     public function render()
     {
-        return view('livewire.reservasi.index', [
+        return view('livewire.reservasi.update-reservasi', [
             'kategoriMotor' => $this->kategoriMotor,
             'tipeMotor' => $this->tipeMotor,
             'jenisRepaint' => $this->jenisRepaint,

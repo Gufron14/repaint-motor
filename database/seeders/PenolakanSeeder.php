@@ -17,9 +17,9 @@ class PenolakanSeeder extends Seeder
             // Admin reasons
             ['keterangan' => 'Dokumen yang diperlukan belum lengkap atau tidak sesuai', 'tipe' => 'admin'],
             ['keterangan' => 'Jadwal workshop sudah penuh untuk periode yang diminta', 'tipe' => 'admin'],
-            ['keterangan' => 'Kondisi motor tidak memungkinkan untuk dilakukan repaint', 'tipe' => 'admin'],
+            ['keterangan' => 'Identitas Alamat Tidak Lengkap atau Nomor Rekening/E-Wallet tidak Valid', 'tipe' => 'admin'],
             ['keterangan' => 'Bukti pembayaran DP tidak valid atau bermasalah', 'tipe' => 'admin'],
-            ['keterangan' => 'Permintaan repaint tidak sesuai dengan layanan yang tersedia', 'tipe' => 'admin'],
+            ['keterangan' => 'Dibatalkan otomatis', 'tipe' => 'admin'],
 
             // Customer reasons
             ['keterangan' => 'Berubah pikiran, tidak jadi repaint', 'tipe' => 'customer'],

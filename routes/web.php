@@ -23,13 +23,7 @@ use App\Livewire\Admin\Portfolio as AdminPortfolio;
 use App\Http\Controllers\MidtransCallbackController;
 use App\Livewire\Admin\Reservasi\Index as ReservasiIndex;
 use App\Livewire\Reservasi\Payment;
-
-// USER
-// User Auth
-// Route::get('login', [UserAuthController::class, 'login'])->name('login');
-// Route::post('login', [UserAuthController::class, 'doLogin'])->name('doLogin');
-// Route::get('register', [UserAuthController::class, 'register'])->name('register');
-// Route::post('register', [UserAuthController::class, 'doRegister'])->name('doRegister');
+use App\Livewire\Reservasi\UpdateReservasi;
 
 Route::middleware('isGuest')->group(function () {
     Route::get('login', Login::class)->name('login');
@@ -49,7 +43,7 @@ Route::get('antrean', Antrean::class)->name('antrean');
 Route::middleware(['auth', 'role:user|admin'])->group(function () {
     Route::get('reservasi', Index::class)->name('reservasi');
     Route::get('riwayat', RiwayatReservasi::class)->name('riwayat.reservasi');
-    // Route::get('riwayat/{id}', Index::class)->name('tambahKomponen');
+    Route::get('reservasi/tambah-komponen/{id}', UpdateReservasi::class)->name('tambahKomponen');
 });
 
 
