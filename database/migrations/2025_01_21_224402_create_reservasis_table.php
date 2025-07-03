@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('kategori_motor_id')->constrained()->onDelete('cascade'); // Relasi ke jenis motor
             $table->foreignId('tipe_motor_id')->constrained()->onDelete('cascade'); // Relasi ke tipe motor
             $table->json('jenis_repaint_id')->constrained()->onDelete('cascade'); // Relasi ke jenis repaint
+            $table->foreignId('penolakan_id')->nullable()->constrained('penolakans')->onDelete('cascade');
             $table->string('warna_body', 7)->nullable();
             $table->string('warna_velg', 7)->nullable();
             $table->string('warna_knalpot', 7)->nullable();

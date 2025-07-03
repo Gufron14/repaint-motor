@@ -24,6 +24,7 @@ class Reservasi extends Model
         'kategori_motor_id',
         'tipe_motor_id',
         'jenis_repaint_id',
+        'penolakan_id',
         'warna_body',
         'warna_velg',
         'warna_knalpot',
@@ -38,8 +39,8 @@ class Reservasi extends Model
         'estimasi_waktu',
         'status',
         'status_bayar'
+        
     ];
-
     
 
     // Add method to calculate remaining payment
@@ -75,6 +76,11 @@ class Reservasi extends Model
     public function jenisRepaint()
     {
         return $this->belongsTo(JenisRepaint::class, 'jenis_repaint_id');
+    }
+
+    public function penolakan()
+    {
+        return $this->belongsTo(Penolakan::class, 'penolakan_id');
     }
 
     public function payment()

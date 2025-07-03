@@ -4,6 +4,7 @@ namespace App\Livewire\Reservasi;
 
 use App\Models\Payment;
 use Livewire\Component;
+use App\Models\Penolakan;
 use App\Models\Reservasi;
 use App\Models\JenisRepaint;
 use App\Models\MotorRepaint;
@@ -28,9 +29,45 @@ class RiwayatReservasi extends Component
 
     public $komponenTambah = [];
 
+    public $selectedPenolakanId;
+    public $showCancelModal = [];
+
     protected $rules = [
         'bukti_pembayaran' => 'required|image|max:2048',
     ];
+
+    public function openCancelModal($reservasiId)
+    {
+        $this->showCancelModal[$reservasiId] = true;
+        $this->selectedPenolakanId = null;
+    }
+
+    public function closeCancelModal($reservasiId)
+    {
+        $this->showCancelModal[$reservasiId] = false;
+        $this->selectedPenolakanId = null;
+    }
+
+    public function batalkanReservasi($id)
+    {
+        $this->validate(
+            [
+                'selectedPenolakanId' => 'required|exists:penolakans,id',
+            ],
+            [
+                'selectedPenolakanId.required' => 'Silakan pilih alasan pembatalan',
+                'selectedPenolakanId.exists' => 'Alasan pembatalan tidak valid',
+            ],
+        );
+
+        $reservasi = Reservasi::find($id);
+        $reservasi->status = 'batal';
+        $reservasi->penolakan_id = $this->selectedPenolakanId;
+        $reservasi->save();
+
+        $this->closeCancelModal($id);
+        session()->flash('success', 'Reservasi berhasil dibatalkan');
+    }
 
     public function submitPembayaran($reservasiId)
     {
@@ -191,7 +228,7 @@ class RiwayatReservasi extends Component
 
     public function render()
     {
-        $reservasi = Reservasi::with(['tipeMotor', 'kategoriMotor', 'payment', 'user'])
+        $reservasi = Reservasi::with(['tipeMotor', 'kategoriMotor', 'payment', 'user', 'penolakan'])
             ->where('user_id', auth()->id())
             ->orderBy('created_at', 'desc')
             ->get();
@@ -222,18 +259,12 @@ class RiwayatReservasi extends Component
         // Tambahkan baris berikut untuk mengirim $jenisRepaint ke view
         $jenisRepaint = JenisRepaint::all();
 
+        $alasanPembatalan = Penolakan::forCustomer()->get();
+
         return view('livewire.reservasi.riwayat-reservasi', [
             'reservasi' => $reservasi,
-            'jenisRepaint' => $jenisRepaint, // <-- ini penting
+            'jenisRepaint' => $jenisRepaint,
+            'alasanPembatalan' => $alasanPembatalan,
         ]);
-    }
-
-    public function batalkanReservasi($id)
-    {
-        $reservasi = Reservasi::find($id);
-        $reservasi->status = 'batal';
-        $reservasi->save();
-
-        session()->flash('success', 'Reservasi berhasil dibatalkan');
     }
 }

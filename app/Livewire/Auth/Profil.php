@@ -14,6 +14,10 @@ class Profil extends Component
     public $username;
     public $phone;
     public $password;
+    public $adress;
+    public $no_rek;
+
+
 public $password_confirmation;
 
     public function mount()
@@ -30,7 +34,9 @@ public function updateProfile()
         'username' => 'required',
         'phone' => 'required|numeric|digits_between:1,12',
         'password' => 'nullable|min:6|same:password_confirmation',
-        'password_confirmation' => 'nullable'
+        'password_confirmation' => 'nullable',
+        'adress' => 'nullable|string|min:5',
+        'no_rek' => 'nullable|string',
     ]);
 
     $user = User::find(Auth::id());
@@ -39,6 +45,8 @@ public function updateProfile()
         $user->name = $validatedData['name'];
         $user->username = $validatedData['username'];
         $user->phone = $validatedData['phone'];
+        $user->adress = $validatedData['adress'];
+        $user->no_rek = $validatedData['no_rek'];
         if (!empty($validatedData['password'])) {
             $user->password = bcrypt($validatedData['password']);
         }

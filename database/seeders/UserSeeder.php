@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
             'name' => 'Admin',
             'username' => 'admin',
             'phone' => '08123456780',
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
         ]);
         $admin->assignRole('admin');
 

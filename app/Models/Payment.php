@@ -17,8 +17,8 @@ class Payment extends Model
         'metode_pembayaran',
         'status_pembayaran',
         'bukti_pembayaran',
-        'jumlah_bayar',
-        'jenis_pembayaran'
+        'bukti_pengembalian',
+        'status_pengembalian'
     ];
 
     public function reservasi()

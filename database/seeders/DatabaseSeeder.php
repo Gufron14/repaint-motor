@@ -7,6 +7,7 @@ use App\Models\KategoriMotor;
 use Illuminate\Database\Seeder;
 use Database\Seeders\UserSeeder;
 use Database\Seeders\AdminSeeder;
+use Database\Seeders\PenolakanSeeder;
 use Database\Seeders\RoleAndPermissionSeeder;
 
 class DatabaseSeeder extends Seeder
@@ -19,6 +20,8 @@ class DatabaseSeeder extends Seeder
 
         // Kemudian jalankan UserSeeder
         $this->call(UserSeeder::class);
+
+        $this->call(PenolakanSeeder::class);
 
         // $this->call([
         //     RoleAndPermissionSeeder::class,

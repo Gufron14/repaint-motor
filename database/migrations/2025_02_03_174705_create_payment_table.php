@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('metode_pembayaran');
             $table->string('status_pembayaran')->default('belum bayar');
             $table->string('bukti_pembayaran');
+            $table->string('bukti_pengembalian')->nullable();
+            $table->boolean('status_pengembalian')->nullable();
             $table->timestamps();
         });
     }

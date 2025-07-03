@@ -1,6 +1,6 @@
 <div>
-    <div class="card" style="width: 50rem; margin: 0 auto;">
-        <div class="card-body">
+    <div class="card shadow-sm border-0" style="width: 50rem; margin: 0 auto;">
+        <div class="card-body p-5">
             @if (session('success'))
                 <div class="alert alert-success">
                     <i class="bi bi-check-circle me-2"></i> {{ session('success') }}
@@ -24,6 +24,20 @@
                             <input type="text" id="phone" wire:model="phone" class="form-control" required>
                             @error('phone')
                                 <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Alamat Lengkap</label>
+                            <input type="text" wire:model="adress" class="form-control">
+                            @error('adress')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nomor Rekening/E-Wallet</label>
+                            <input type="text" wire:model="no_rek" class="form-control">
+                            @error('no_rek')
+                                <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
                     </div>

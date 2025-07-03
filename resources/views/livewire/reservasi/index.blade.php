@@ -296,11 +296,11 @@
                         </div>
                     @endif
                     
-                   {{-- @if (session()->has('error'))
+                   @if (session()->has('error'))
                         <div class="alert alert-danger">
                             {{ session('error') }}
                         </div>
-                    @endif --}}
+                    @endif
                     
                     <!-- Debug info untuk development -->
                     @if (app()->environment('local'))

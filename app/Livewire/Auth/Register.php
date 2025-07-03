@@ -14,19 +14,21 @@ class Register extends Component
     public $username;
     public $phone;
     public $password;
+    public $adress;
+    public $no_rek;
 
     protected $rules = [
         'name' => 'required|min:3',
         'username' => 'required|unique:users',
-        'phone' => 'required|numeric|unique:users|min:10|max:12',
+        'phone' => 'required|numeric|unique:users|min:10',
         'password' => 'required|min:6',
+        'adress' => 'required|string|min:5',
+        'no_rek' => 'required|string|unique:users',
     ];
 
     public function register()
     {
         $this->validate();
-
-        
 
         if (strlen(preg_replace('/\D/', '', $this->phone)) < 10 || strlen(preg_replace('/\D/', '', $this->phone)) > 12) {
             $this->addError('phone', 'Nomor telepon harus terdiri dari 10 sampai 12 digit.');
@@ -38,6 +40,8 @@ class Register extends Component
             'username' => $this->username,
             'phone' => $this->phone,
             'password' => bcrypt($this->password),
+            'adress' => $this->adress,
+            'no_rek' => $this->no_rek,
         ]);
 
         // Assign role user (customer) secara default

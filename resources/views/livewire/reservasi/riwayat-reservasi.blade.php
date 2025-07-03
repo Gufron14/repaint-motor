@@ -32,7 +32,9 @@
                                 <i class="bi bi-x-lg"></i>
                             </div>
                             <div class="">
-                                Reservasi Anda Ditolak
+                                Reservasi Anda <strong>Ditolak</strong> karena
+                                <strong>{{ $item->penolakan->keterangan }}</strong> dan tidak akan diproses. Coba lagi
+                                lain kali.
                             </div>
                         </div>
                     @elseif ($item->status == 'batal')
@@ -41,7 +43,8 @@
                                 <i class="bi bi-x-lg"></i>
                             </div>
                             <div class="">
-                                Reservasi ini <strong>Dibatalkan</strong> dan tidak akan diproses.
+                                Reservasi ini <strong>Dibatalkan</strong> karena
+                                <strong>{{ $item->penolakan->keterangan }}</strong> dan tidak akan diproses.
                             </div>
                         </div>
                     @elseif ($item->status == 'selesai')
@@ -81,63 +84,61 @@
                                         Data tidak tersedia
                                     @endif
                                 </h4>
-                                <a href="{{ route('tambahKomponen', $item->id) }}">Tambah</a>
+                                <a href="{{ route('reservasi') }}">Tambah Repaint</a>
                             </div>
                         </div>
                     </div>
-                    <div class="col d-flex gap-2 align-items-center">
-                        <div class="card border-warning">
-                            <div class="card-body text-warning fw-bold">
-                                <label for="" class="form-label text-secondary text-uppercase">dp 10%</label>
-                                <span>
-                                    <a href="#" data-bs-toggle="modal"
-                                        data-bs-target="#imageModal{{ $item->id }}">
-                                        <i class="bi bi-eye-fill"></i>
-                                    </a>
-                                </span>
-                                <h5 class="mb-0 fw-bold">
-                                    Rp{{ number_format($item->total_harga * 0.1, 0, ',', '.') }}
-                                </h5>
+                    @if ($item->status === 'batal')
+                    @else
+                        <div class="col d-flex gap-2 align-items-center">
+                            <div class="card border-warning">
+                                <div class="card-body text-warning fw-bold">
+                                    <label for="" class="form-label text-secondary text-uppercase">dp
+                                        10%</label>
+                                    <span>
+                                        <a href="#" data-bs-toggle="modal"
+                                            data-bs-target="#imageModal{{ $item->id }}">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </a>
+                                    </span>
+                                    <h5 class="mb-0 fw-bold">
+                                        Rp{{ number_format($item->total_harga * 0.1, 0, ',', '.') }}
+                                    </h5>
+                                </div>
                             </div>
-                        </div>
-                        <div class="card border-danger">
-                            <div class="card-body text-danger fw-bold">
-                                <label for="" class="form-label text-secondary text-uppercase">sisa
-                                    bayar</label>
-                                <h5 class="mb-0 fw-bold">
-                                    {{ $item->formatted_sisa_bayar }}
-                                </h5>
+                            <div class="card border-danger">
+                                <div class="card-body text-danger fw-bold">
+                                    <label for="" class="form-label text-secondary text-uppercase">sisa
+                                        bayar</label>
+                                    <h5 class="mb-0 fw-bold">
+                                        {{ $item->formatted_sisa_bayar }}
+                                    </h5>
+                                </div>
                             </div>
-                        </div>
 
 
-                        <div class="card border-success">
-                            <div class="card-body text-success fw-bold">
-                                <label for="" class="form-label text-secondary text-uppercase">total
-                                    harga</label>
-                                <span>
-                                    <a href="#" data-bs-toggle="modal"
-                                        data-bs-target="#exampleModal{{ $item->id }}">
-                                        <i class="bi bi-eye-fill"></i>
-                                    </a>
-                                </span>
-                                <h5 class="mb-0 fw-bold">
-                                    Rp{{ number_format($item->total_harga, 0, ',', '.') }}
-                                </h5>
+                            <div class="card border-success">
+                                <div class="card-body text-success fw-bold">
+                                    <label for="" class="form-label text-secondary text-uppercase">total
+                                        harga</label>
+                                    <span>
+                                        <a href="#" data-bs-toggle="modal"
+                                            data-bs-target="#exampleModal{{ $item->id }}">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </a>
+                                    </span>
+                                    <h5 class="mb-0 fw-bold">
+                                        Rp{{ number_format($item->total_harga, 0, ',', '.') }}
+                                    </h5>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    @endif
                 </div>
-
-                {{-- Tambah Komponen --}}
-
-
-
-                {{-- End --}}
 
                 <div class="d-flex gap-3">
                     <div class="alert alert-warning text-center" role="alert">
-                        Status pengeerjaan Repaint Motor saat ini:
+                        Status pengerjaan Repaint Motor saat ini:
                         <strong>
                             @if ($item->status == 'pending')
                                 Menunggu Persetujuan
@@ -170,6 +171,11 @@
                     </div>
 
                     @if ($item->status === 'batal' || $item->status === 'selesai')
+                        {{-- @if ($item->status === 'batal')                            
+                            <div class="alert alert-info text-center" role="alert">
+                                Reservasi dibatalkan dengan alasan {{ $item->penolakan->keterangan }}
+                            </div>
+                        @endif --}}
                     @else
                         <div class="alert alert-info text-center" role="alert">
                             Estimasi waktu pengerjaan <strong>{{ $item->estimasi_waktu }} hari</strong> sampai dengan
@@ -217,11 +223,10 @@
                     <div>
                         <div>
                             @if ($item->status == 'pending')
-                            <button wire:click="batalkanReservasi({{ $item->id }})"
-                                wire:confirm="Yakin ingin membatalkan reservasi?"
-                                class="btn btn-danger fw-bold">
-                                Batalkan Reservasi
-                            </button>
+                                <button wire:click="openCancelModal({{ $item->id }})"
+                                    class="btn btn-danger fw-bold">
+                                    Batalkan Reservasi
+                                </button>
                                 @if (!$item->payment || !$item->payment->bukti_pembayaran)
                                     <button class="btn btn-success fw-bold ms-2" data-bs-toggle="modal"
                                         data-bs-target="#modalPembayaran{{ $item->id }}">
@@ -232,28 +237,6 @@
                         </div>
                     </div>
                 </div>
-
-                {{-- BUtton --}}
-                {{-- <div class="mt-4">
-                    @if ($item->status == 'pending')
-                        <div class="d-flex gap-2">
-                            <button wire:click="batalkanReservasi({{ $item->id }})" class="btn btn-danger fw-bold"
-                                onclick="return confirm('Yakin ingin membatalkan reservasi?')">
-                                Batalkan Reservasi
-                            </button>
-
-                            @if (!$item->payment || !$item->payment->bukti_pembayaran)
-                                <button class="btn fw-bold btn-success" data-bs-toggle="modal"
-                                    data-bs-target="#modalPembayaran{{ $item->id }}">Bayar Sekarang</button>
-                            @endif
-                        </div>
-                    @else
-                        <button wire:click="batalkanReservasi({{ $item->id }})" class="btn btn-danger fw-bold"
-                            onclick="return confirm('Yakin ingin membatalkan reservasi?')" disabled>
-                            Batalkan Reservasi
-                        </button>
-                    @endif
-                </div> --}}
             </div>
         </div>
 
@@ -306,8 +289,54 @@
             </div>
         </div>
 
+        @if (isset($showCancelModal[$item->id]) && $showCancelModal[$item->id])
+            <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Batalkan Reservasi</h5>
+                            <button type="button" class="btn-close"
+                                wire:click="closeCancelModal({{ $item->id }})"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="mb-3">Pilih alasan pembatalan reservasi:</p>
 
-        {{-- Gambar bukti_pembayaran --}}
+                            @error('selectedPenolakanId')
+                                <div class="alert alert-danger">{{ $message }}</div>
+                            @enderror
+
+                            <div class="form-group">
+                                @foreach ($alasanPembatalan as $penolakan)
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="radio"
+                                            wire:model="selectedPenolakanId" value="{{ $penolakan->id }}"
+                                            name="pembatalan_{{ $item->id }}"
+                                            id="pembatalan{{ $penolakan->id }}_{{ $item->id }}">
+                                        <label class="form-check-label"
+                                            for="pembatalan{{ $penolakan->id }}_{{ $item->id }}">
+                                            {{ $penolakan->keterangan }}
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary"
+                                wire:click="closeCancelModal({{ $item->id }})">
+                                Tutup
+                            </button>
+                            <button type="button" class="btn btn-danger"
+                                wire:click="batalkanReservasi({{ $item->id }})">
+                                <i class="fas fa-times me-1"></i>
+                                Batalkan Reservasi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+
         {{-- Gambar bukti_pembayaran --}}
         <div class="modal fade" id="imageModal{{ $item->id }}" tabindex="-1"
             aria-labelledby="imageModalLabel{{ $item->id }}" aria-hidden="true">
@@ -374,26 +403,26 @@
             </div>
         </div>
 
-        
-                <div class="modal fade" id="tambahModal" tabindex="-1" aria-labelledby="tambahModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="tambahModalLabel">Modal title</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                ...
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary">Save changes</button>
-                            </div>
-                        </div>
+
+        <div class="modal fade" id="tambahModal" tabindex="-1" aria-labelledby="tambahModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="tambahModalLabel">Modal title</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        ...
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
                     </div>
                 </div>
+            </div>
+        </div>
 
     @empty
         <h3 class="text-center text-danger">
@@ -402,6 +431,6 @@
         <div class="text-center">Silakan lakukan Reservasi</div>
     @endforelse
 
-    
+
 
 </div>

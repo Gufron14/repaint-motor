@@ -1,4 +1,4 @@
-    <div class="card mt-4 p-3" style="width: 25rem; margin: 0 auto;">
+    <div class="card border-0 shadow-sm mt-4 p-3" style="width: 25rem; margin: 0 auto;">
         <div class="card-body">
             <h2 class="text-center fw-bold">Login</h2>
             <form wire:submit.prevent="login">
@@ -29,7 +29,7 @@
                     @enderror
                 </div>
 
-                <div class="row">
+                <div class="row mt-5">
                     <div class="col-4">
                         <button type="submit" class="btn btn-primary fw-bold">Login</button>
                     </div>
