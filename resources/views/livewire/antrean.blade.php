@@ -8,7 +8,7 @@
                     <small id="debug-info">Loading debug...</small>
                 </div> --}}
 
-                <small class="text-muted">*Demo Sidang Skripsi: 30 detik = 1 hari</small>
+                {{-- <small class="text-muted">*Demo Sidang Skripsi: 30 detik = 1 hari</small> --}}
             </div>
             <table class="table  table-striped">
                 <thead class="text-center">
@@ -39,7 +39,7 @@
                                         <div>Status: {{ $antrean['status'] }}</div>
                                     </div> --}}
 
-                                    @if ($antrean['total_detik_sisa'] > 0)
+                                    {{-- @if ($antrean['total_detik_sisa'] > 0)
                                         <br>
                                         <small class="text-primary fw-bold">
                                             <span class="countdown-timer"
@@ -52,7 +52,7 @@
                                     @elseif($antrean['estimasi_selesai'] !== 'Selesai' && $antrean['estimasi_selesai'] !== 'Hari Ini')
                                         <br>
                                         <small class="text-danger fw-bold">Waktu Habis</small>
-                                    @endif
+                                    @endif --}}
                                 </td>
 
                             </tr>

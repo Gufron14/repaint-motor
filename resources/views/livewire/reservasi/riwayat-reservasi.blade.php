@@ -173,10 +173,53 @@
                     </div>
 
                     @if ($item->status === 'batal' || $item->status === 'selesai' || $item->status === 'tolak')
-                        @if (in_array($item->status, ['batal', 'tolak']) && $item->payment && $item->payment->bukti_pembayaran)
-                            <div class="alert alert-info text-center" role="alert">
-                                Pengembalian Dana akan dikirim ke <strong>{{ $item->user->no_rek }}</strong>  dalam waktu kurang lebih 24 Jam. Pastikan nomor rekening/e-wallet Benar.
-                            </div>
+                        @if (
+                        in_array($item->status, ['batal', 'tolak']) 
+                        &&
+                        $item->payment 
+                        && 
+                        $item->payment->bukti_pembayaran)
+
+@php
+    $buktiPengembalian = optional($item->payment)->bukti_pembayaran;
+@endphp
+
+@if ($buktiPengembalian)
+    {{-- Tampilkan informasi dan gambar bukti pengembalian --}}
+    <div class="alert alert-success text-center" role="alert">
+        Bukti Pengembalian Dana telah dikirim. Silakan lihat detailnya di bawah ini.
+    </div>
+
+    <div class="text-center mb-3">
+        <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal{{ $item->id }}">
+            <img src="{{ asset('storage/' . $buktiPengembalian) }}"
+                 alt="Bukti Pengembalian"
+                 class="img-thumbnail shadow"
+                 style="max-width: 200px;">
+        </a>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="imageModal{{ $item->id }}" tabindex="-1" aria-labelledby="imageModalLabel{{ $item->id }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <img src="{{ asset('storage/' . $buktiPengembalian) }}"
+                         alt="Bukti"
+                         class="img-fluid rounded">
+                </div>
+            </div>
+        </div>
+    </div>
+@else
+    {{-- Jika belum ada bukti --}}
+    <div class="alert alert-info text-center" role="alert">
+        Pengembalian Dana akan dikirim ke <strong>{{ $item->user->no_rek }}</strong> dalam
+        waktu kurang lebih 24 Jam. Pastikan nomor rekening/e-wallet Benar.
+    </div>
+@endif
+
+                             
                         @endif
                     @else
                         <div class="alert alert-info text-center" role="alert">
@@ -187,30 +230,30 @@
 
                 </div>
 
-                @php
-                    $warnaList = [
-                        'Body' => $item->warna_body ?? null,
-                        'Velg' => $item->warna_velg ?? null,
-                        'Knalpot' => $item->warna_knalpot ?? null,
-                        'CVT' => $item->warna_cvt ?? null,
-                    ];
-                @endphp
+                    @php
+                        $warnaList = [
+                            'Body' => $item->warna_body ?? null,
+                            'Velg' => $item->warna_velg ?? null,
+                            'Knalpot' => $item->warna_knalpot ?? null,
+                            'CVT' => $item->warna_cvt ?? null,
+                        ];
+                    @endphp
 
-                <div class="d-flex gap-3 justify-content-center mb-4">
-                    @foreach ($warnaList as $label => $warna)
-                        @if ($warna)
-                            <div class="card w-100">
-                                <div class="d-flex align-items-center justify-content-center text-white"
-                                    style="height: 200px; background-color: {{ $warna }}">
-                                    <div class="text-center p-3">
-                                        <small class="opacity-75">Warna {{ $label }}</small>
-                                        <h5 class="mb-0 fw-bold text-uppercase">{{ $warna }}</h5>
+                    <div class="d-flex gap-3 justify-content-center mb-4">
+                        @foreach ($warnaList as $label => $warna)
+                            @if ($warna)
+                                <div class="card w-100">
+                                    <div class="d-flex align-items-center justify-content-center text-white"
+                                        style="height: 200px; background-color: {{ $warna }}">
+                                        <div class="text-center p-3">
+                                            <small class="opacity-75">Warna {{ $label }}</small>
+                                            <h5 class="mb-0 fw-bold text-uppercase">{{ $warna }}</h5>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endif
-                    @endforeach
-                </div>
+                            @endif
+                        @endforeach
+                    </div>
 
                 <div class="d-flex mb-3 gap-2 align-items-center">
                     <label for="" class="form-label text-secondary">Catatan:</label>

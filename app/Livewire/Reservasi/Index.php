@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Reservasi;
 
-use Log;
 use Midtrans\Snap;
 use App\Models\Payment;
 use Livewire\Component;
@@ -13,6 +12,7 @@ use App\Models\MotorRepaint;
 use App\Models\KategoriMotor;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Title;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
 #[Title('Reservasi')]
@@ -263,7 +263,7 @@ class Index extends Component
             ]);
 
             // Log untuk debugging
-            \Log::info('Reservasi created with ID: ' . $reservasi->id);
+            Log::info('Reservasi created with ID: ' . $reservasi->id);
 
             $reservasi->update([
                 'jenis_repaint_id' => json_encode($this->selectedRepaints),
@@ -273,7 +273,7 @@ class Index extends Component
             $this->reservasiTersimpan = true; // Tandai bahwa reservasi sudah tersimpan
 
             // Log untuk debugging
-            \Log::info('ReservasiId set to: ' . $this->reservasiId);
+            Log::info('ReservasiId set to: ' . $this->reservasiId);
 
             // Buat Snap Token dari Midtrans
             $this->createSnapToken($reservasi);
@@ -283,8 +283,8 @@ class Index extends Component
             $this->dispatch('openPaymentModal');
         } catch (\Exception $e) {
             // Log error untuk debugging
-            \Log::error('Error in reservasi method: ' . $e->getMessage());
-            \Log::error('Error trace: ' . $e->getTraceAsString());
+            Log::error('Error in reservasi method: ' . $e->getMessage());
+            Log::error('Error trace: ' . $e->getTraceAsString());
 
             session()->flash('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
@@ -317,10 +317,10 @@ class Index extends Component
             ];
 
             // Tambahkan log untuk debugging
-            \Log::info('Creating Snap Token with data:', $transaction);
+            Log::info('Creating Snap Token with data:', $transaction);
 
             $snapToken = Snap::getSnapToken($transaction);
-            \Log::info('Snap Token created: ' . $snapToken);
+            Log::info('Snap Token created: ' . $snapToken);
 
             // Simpan snap token ke database
             $payment = Payment::create([
@@ -333,13 +333,13 @@ class Index extends Component
             $this->snapToken = $snapToken;
 
             // Tambahkan log untuk memastikan snapToken tersimpan
-            \Log::info('Snap Token saved to component: ' . $this->snapToken);
+            Log::info('Snap Token saved to component: ' . $this->snapToken);
 
             // Dispatch event to refresh the UI
             $this->dispatch('snapTokenGenerated', ['token' => $snapToken]);
         } catch (\Exception $e) {
-            \Log::error('Error creating Snap Token: ' . $e->getMessage());
-            \Log::error('Error trace: ' . $e->getTraceAsString());
+            Log::error('Error creating Snap Token: ' . $e->getMessage());
+            Log::error('Error trace: ' . $e->getTraceAsString());
             session()->flash('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
@@ -366,22 +366,17 @@ class Index extends Component
     {
         try {
             // Debug info
-            \Log::info('submitPembayaran called with reservasiId: ' . ($this->reservasiId ?? 'null'));
+            Log::info('submitPembayaran called with reservasiId: ' . ($this->reservasiId ?? 'null'));
 
             if (!$this->reservasiId) {
                 session()->flash('error', 'ID Reservasi tidak ditemukan. Silakan buat reservasi terlebih dahulu.');
                 return;
             }
 
-            if (!$this->bukti_pembayaran) {
-                session()->flash('error', 'File bukti pembayaran tidak ditemukan.');
-                return;
-            }
-
             $filename = $this->bukti_pembayaran->store('bukti-pembayaran', 'public');
 
             // Debug info
-            \Log::info('Creating payment with reservasi_id: ' . $this->reservasiId);
+            Log::info('Creating payment with reservasi_id: ' . $this->reservasiId);
 
             $payment = Payment::create([
                 'reservasi_id' => $this->reservasiId,
@@ -390,8 +385,13 @@ class Index extends Component
                 'bukti_pembayaran' => $filename,
             ]);
 
+            if (!$this->bukti_pembayaran) {
+                session()->flash('error', 'File bukti pembayaran tidak ditemukan.');
+                return;
+            }
+
             // Debug info
-            \Log::info('Payment created with ID: ' . $payment->id);
+            Log::info('Payment created with ID: ' . $payment->id);
 
             session()->flash('success', 'Reservasi berhasil dikirim!');
             $this->reset('bukti_pembayaran');
@@ -400,8 +400,8 @@ class Index extends Component
             return redirect()->route('riwayat.reservasi');
         } catch (\Exception $e) {
             // Log error untuk debugging
-            \Log::error('Error in submitPembayaran: ' . $e->getMessage());
-            \Log::error('Error trace: ' . $e->getTraceAsString());
+            Log::error('Error in submitPembayaran: ' . $e->getMessage());
+            Log::error('Error trace: ' . $e->getTraceAsString());
 
             session()->flash('error', 'Terjadi kesalahan saat menyimpan pembayaran: ' . $e->getMessage());
         }

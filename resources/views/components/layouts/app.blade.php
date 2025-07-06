@@ -38,11 +38,11 @@
     </div>
 
     <!-- Floating WhatsApp Button -->
-    <a href="https://wa.me/62895372513547?text=Hallo%20Hype%20Custom%20Project" target="_blank" class="whatsapp-button">
+    <a href="https://wa.me/62895320501644?text=Hallo%20Hype%20Custom%20Project,%20%Aku%20mau%20Reservasi%20Repaint%20Motor" target="_blank" class="whatsapp-button">
         <i class="bi bi-whatsapp"></i> Hubungi Kami
     </a>
 
-    <footer class="bg-body-tertiary text-center text-lg-start mt-5">
+    <footer class="bg-body-tertiary text-center text-lg-start">
         <div class="d-flex justify-content-between align-items-middle mx-5 py-3">
             <div>
                 <h5 class="fw-bold">Hype Custom Project</h5>
@@ -50,7 +50,7 @@
             </div>
             <div class="align-self-center">
                 <div class="fs-5">
-                    <a href="https://wa.me/62895372513547"><i class="bi bi-telephone-fill"></i></a>
+                    <a href="https://wa.me/62895320501644"><i class="bi bi-telephone-fill"></i></a>
                     <a
                         href="https://www.instagram.com/hypecustom.project?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="><i
                             class="bi bi-instagram"></i></a>

@@ -314,7 +314,9 @@
                         <p class="fw-bold h4">Total Pembayaran DP 10%: Rp. {{ number_format($dpHarga, 0, ',', '.') }}</p>
                         <p>Silahkan transfer ke rekening:</p>
                         <ul>
-                            <li class="fw-bold">BCA: 1234567890 (A/N Hype Custom Project)</li>
+                            <li class="fw-bold">BCA: 5681213466
+                                (A/N ARIF ALFA RIZKI
+                                )</li>
                         </ul>
                     </div>
                     <div class="mb-3">

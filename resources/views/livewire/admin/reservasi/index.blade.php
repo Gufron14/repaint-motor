@@ -95,8 +95,11 @@
                             @endif
                         </td>
                         <td class="d-flex gap-1 justify-content-center align-items-center">
-                            @if ($item->status == 'tolak' || ($item->status == 'batal' && $item->payment && !$item->payment->bukti_pengembalian))
-                                {{-- Button Kembalikan Uang untuk reservasi yang ditolak dan sudah bayar, jika belum ada bukti_pengembalian --}}
+                            @if (
+                                $item->status == 'tolak' && $item->payment && !$item->payment->bukti_pengembalian
+                                ||
+                                $item->status == 'batal' && $item->payment && !$item->payment->bukti_pengembalian
+                                )
                                 <button class="btn btn-sm btn-success"
                                     wire:click="openRefundModal({{ $item->id }})">
                                     Refund

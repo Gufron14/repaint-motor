@@ -230,7 +230,7 @@ class RiwayatReservasi extends Component
     {
         $reservasi = Reservasi::with(['tipeMotor', 'kategoriMotor', 'payment', 'user', 'penolakan'])
             ->where('user_id', auth()->id())
-            ->orderBy('created_at', 'desc')
+            ->orderBy('updated_at', 'desc')
             ->get();
 
         $reservasi->transform(function ($item) {
