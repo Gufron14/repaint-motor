@@ -26,6 +26,8 @@ public $password_confirmation;
         $this->name = $user->name;
         $this->username = $user->username;
         $this->phone = $user->phone;
+        $this->adress = $user->adress;
+        $this->no_rek = $user->no_rek;
     }
 public function updateProfile()
 {

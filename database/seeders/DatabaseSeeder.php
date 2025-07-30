@@ -34,11 +34,8 @@ class DatabaseSeeder extends Seeder
                 'tipe_motor' => [
                     'Supra X',
                     'Vega ZR',
-                    'Jupiter Z', // 4-tak bebek manual
+                    'Jupiter Z',
                     'Beat Karbu',
-                    'ESP',
-                    'Mio',
-                    'Mio 3', // matic manual basic, diasumsikan
                 ],
                 'jenis_repaint' => [['nama' => 'Full Body', 'harga' => 700000, 'estimasi' => '7 hari'], ['nama' => 'Body Halus', 'harga' => 500000, 'estimasi' => '5 hari'], ['nama' => 'Body Kasar', 'harga' => 200000, 'estimasi' => '5 hari'], ['nama' => 'Velg', 'harga' => 250000, 'estimasi' => '1 hari'], ['nama' => 'Knalpot', 'harga' => 50000, 'estimasi' => '1 hari']],
             ],
@@ -56,7 +53,7 @@ class DatabaseSeeder extends Seeder
                 'jenis_repaint' => [['nama' => 'Full Body', 'harga' => 850000, 'estimasi' => '7 hari'], ['nama' => 'Body Halus', 'harga' => 600000, 'estimasi' => '5 hari'], ['nama' => 'Body Kasar', 'harga' => 250000, 'estimasi' => '5 hari'], ['nama' => 'Velg', 'harga' => 350000, 'estimasi' => '1 hari'], ['nama' => 'Knalpot', 'harga' => 50000, 'estimasi' => '1 hari']],
             ],
             'Matic' => [
-                'tipe_motor' => ['Vario 125 Old', 'Vario 150 Old', 'Vario 125 New', 'Vario 150 New', 'Xeon', 'Soul GT', 'Lexy', 'N-Max', 'Vario 160', 'PCX 150 Old', 'PCX 160', 'Scoopy Old', 'Scoopy New', 'Genio', 'Fazio', 'Filano'],
+                'tipe_motor' => ['Vario 125 Old', 'Vario 150 Old', 'Vario 125 New', 'Vario 150 New', 'Xeon', 'Soul GT', 'Lexy', 'N-Max', 'Vario 160', 'PCX 150 Old', 'PCX 160', 'Scoopy Old', 'Scoopy New', 'Genio', 'Fazio', 'Filano', 'ESP', 'Mio', 'Mio 3',],
                 'jenis_repaint' => [['nama' => 'Full Body', 'harga' => 950000, 'estimasi' => '7 hari'], ['nama' => 'Body Halus', 'harga' => 700000, 'estimasi' => '5 hari'], ['nama' => 'Body Kasar', 'harga' => 250000, 'estimasi' => '5 hari'], ['nama' => 'Velg', 'harga' => 250000, 'estimasi' => '1 hari'], ['nama' => 'Knalpot', 'harga' => 50000, 'estimasi' => '1 hari'], ['nama' => 'CVT', 'harga' => 100000, 'estimasi' => '1 hari']],
             ],
         ];
