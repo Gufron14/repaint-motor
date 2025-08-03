@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Reservasi;
 
-use Log;
 use Midtrans\Snap;
+use Illuminate\Support\Facades\Log;
 use App\Models\Payment;
 use Livewire\Component;
 use App\Models\Reservasi;
@@ -130,13 +130,26 @@ class UpdateReservasi extends Component
 
     public function calculateAdditionalPayment()
     {
-        if ($this->existingPayment) {
-            // Jika sudah ada pembayaran, hitung selisih dari total harga baru
-            $this->additionalPayment = $this->totalHarga - $this->originalTotalHarga;
-        } else {
-            // Jika belum ada pembayaran, bayar DP 10%
-            $this->additionalPayment = $this->dpHarga;
-        }
+        // Hitung DP baru (10% dari total harga terbaru)
+        $newDp = $this->totalHarga * 0.1;
+
+        // Ambil DP awal yang sudah disimpan di database
+        $originalDp = $this->reservasi->original_dp_amount ?? ($this->originalTotalHarga * 0.1);
+
+        // Hitung selisih DP
+        $dpDifference = $newDp - $originalDp;
+
+        // Jika selisih positif (naik), user perlu bayar tambahan
+        // Jika selisih negatif (turun), tidak perlu pembayaran tambahan
+        $this->additionalPayment = max(0, $dpDifference);
+
+        // Log untuk debugging
+        Log::info("DP Calculation:", [
+            'new_dp' => $newDp,
+            'original_dp' => $originalDp,
+            'difference' => $dpDifference,
+            'additional_payment' => $this->additionalPayment
+        ]);
     }
 
     public function loadAvailableTypes()
@@ -229,27 +242,27 @@ class UpdateReservasi extends Component
     }
 
     public function calculateTotal()
-{
-    $this->totalHarga = 0;
-    $this->dpHarga = 0;
-    $this->estimasiWaktu = 0;
+    {
+        $this->totalHarga = 0;
+        $this->dpHarga = 0;
+        $this->estimasiWaktu = 0;
 
-    if (!empty($this->selectedRepaints)) {
-        $repaints = JenisRepaint::whereIn('id', $this->selectedRepaints)->get();
+        if (!empty($this->selectedRepaints)) {
+            $repaints = JenisRepaint::whereIn('id', $this->selectedRepaints)->get();
 
-        foreach ($repaints as $repaint) {
-            $motorRepaint = MotorRepaint::where('tipe_motor_id', $this->selectedTipe)->where('jenis_repaint_id', $repaint->id)->first();
+            foreach ($repaints as $repaint) {
+                $motorRepaint = MotorRepaint::where('tipe_motor_id', $this->selectedTipe)->where('jenis_repaint_id', $repaint->id)->first();
 
-            if ($motorRepaint) {
-                $this->totalHarga += $motorRepaint->harga;
-                $this->estimasiWaktu += $motorRepaint->estimasi_waktu;
+                if ($motorRepaint) {
+                    $this->totalHarga += $motorRepaint->harga;
+                    $this->estimasiWaktu += $motorRepaint->estimasi_waktu;
+                }
             }
-        }
 
-        $this->dpHarga = $this->totalHarga * 0.1;
-        $this->calculateAdditionalPayment(); // Tambahkan ini
+            $this->dpHarga = $this->totalHarga * 0.1;
+            $this->calculateAdditionalPayment(); // Tambahkan ini
+        }
     }
-}
 
     public function resetCalculation()
     {
@@ -262,6 +275,13 @@ class UpdateReservasi extends Component
     {
         $this->calculateAdditionalPayment();
         $this->showPaymentModal = true;
+
+        // Log untuk debugging
+        Log::info('Opening payment modal', [
+            'additional_payment' => $this->additionalPayment,
+            'show_modal' => $this->showPaymentModal
+        ]);
+
         $this->dispatch('openPaymentModal');
     }
 
@@ -337,6 +357,9 @@ class UpdateReservasi extends Component
                 'estimasi_waktu' => $this->estimasiWaktu,
             ]);
 
+            // Selalu buka modal pembayaran untuk menunjukkan status
+            $this->showPaymentModal = true;
+
             // Update existing photo paths
             $this->existing_foto_motor = $foto_motor_path;
             $this->existing_foto_velg = $foto_velg_path;
@@ -346,17 +369,31 @@ class UpdateReservasi extends Component
             // Reset file inputs
             $this->reset(['foto_motor', 'foto_velg', 'foto_knalpot', 'foto_cvt']);
 
-            // Jika ada pembayaran tambahan, buka modal pembayaran
+            // Hitung pembayaran tambahan dan buka modal
+            $this->calculateAdditionalPayment();
+
+            // Log informasi untuk debugging
+            Log::info('Update reservasi completed', [
+                'reservasi_id' => $this->reservasiId,
+                'additional_payment' => $this->additionalPayment,
+                'total_harga_baru' => $this->totalHarga,
+                'total_harga_lama' => $this->originalTotalHarga
+            ]);
+
+
+
             if ($this->additionalPayment > 0) {
-                $this->openPaymentModal();
                 session()->flash('message', 'Reservasi berhasil diupdate! Silakan lakukan pembayaran tambahan.');
             } else {
-                session()->flash('message', 'Reservasi berhasil diupdate!');
-                return redirect()->route('riwayat.reservasi');
+                session()->flash('message', 'Reservasi berhasil diupdate! Tidak ada pembayaran tambahan diperlukan.');
             }
+
+            // Dispatch event untuk trigger modal via JavaScript
+            // Dispatch event untuk trigger modal via JavaScript
+            $this->dispatch('openPaymentModal');
         } catch (\Exception $e) {
-            \Log::error('Error in updateReservasi method: ' . $e->getMessage());
-            \Log::error('Error trace: ' . $e->getTraceAsString());
+            Log::error('Error in updateReservasi method: ' . $e->getMessage());
+            Log::error('Error trace: ' . $e->getTraceAsString());
 
             session()->flash('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
@@ -375,11 +412,12 @@ class UpdateReservasi extends Component
             // Buat payment baru untuk pembayaran tambahan
             Payment::create([
                 'reservasi_id' => $this->reservasiId,
+                'amount' => $this->additionalPayment,
+                'payment_type' => 'additional',
+                'description' => 'Pembayaran tambahan untuk selisih DP setelah update reservasi',
                 'metode_pembayaran' => 'transfer',
                 'status_pembayaran' => 'pending',
                 'bukti_pembayaran' => $filename,
-                'jumlah_pembayaran' => $this->additionalPayment,
-                'keterangan' => 'Pembayaran tambahan untuk update reservasi',
             ]);
 
             session()->flash('success', 'Pembayaran tambahan berhasil dikirim!');
@@ -388,7 +426,7 @@ class UpdateReservasi extends Component
 
             return redirect()->route('riwayat.reservasi');
         } catch (\Exception $e) {
-            \Log::error('Error in submitAdditionalPayment: ' . $e->getMessage());
+            Log::error('Error in submitAdditionalPayment: ' . $e->getMessage());
             session()->flash('error', 'Terjadi kesalahan saat menyimpan pembayaran: ' . $e->getMessage());
         }
     }
@@ -397,6 +435,21 @@ class UpdateReservasi extends Component
     {
         $this->showPaymentModal = false;
         $this->reset('bukti_pembayaran');
+
+        // Log untuk debugging
+        Log::info('Closing payment modal', [
+            'additional_payment' => $this->additionalPayment
+        ]);
+
+        // Jika tidak ada pembayaran tambahan, redirect ke riwayat
+        if ($this->additionalPayment <= 0) {
+            session()->flash('success', 'Reservasi berhasil diupdate!');
+            return redirect()->route('riwayat.reservasi');
+        }
+        $this->dispatch('closePaymentModal');
+
+        // Ensure the modal is hidden if additional payment is still required
+        $this->showPaymentModal = false;
     }
 
     public function render()

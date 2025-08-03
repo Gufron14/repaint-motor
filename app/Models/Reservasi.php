@@ -36,6 +36,8 @@ class Reservasi extends Model
         'nomor_polisi',
         'catatan',
         'total_harga',
+        'original_total_harga',
+        'original_dp_amount',
         'estimasi_waktu',
         'status',
         'status_bayar'
@@ -86,5 +88,37 @@ class Reservasi extends Model
     public function payment()
     {
         return $this->hasOne(Payment::class, 'reservasi_id');
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class, 'reservasi_id');
+    }
+
+    // Method untuk menghitung selisih DP
+    public function calculateDpDifference()
+    {
+        $newDp = $this->total_harga * 0.1;
+        $originalDp = $this->original_dp_amount ?? ($this->original_total_harga * 0.1);
+        
+        return $newDp - $originalDp;
+    }
+
+    // Method untuk mendapatkan DP yang sudah dibayar
+    public function getPaidDpAmount()
+    {
+        return $this->payments()
+            ->where('payment_type', 'dp')
+            ->where('status_pembayaran', 'berhasil')
+            ->sum('amount');
+    }
+
+    // Method untuk mendapatkan total pembayaran tambahan
+    public function getAdditionalPaymentAmount()
+    {
+        return $this->payments()
+            ->where('payment_type', 'additional')
+            ->where('status_pembayaran', 'berhasil')
+            ->sum('amount');
     }
 }

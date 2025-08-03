@@ -269,7 +269,7 @@
                         <i class="bi bi-arrow-left me-2"></i>Kembali
                     </button>
                     <button type="button" class="btn btn-primary fw-bold flex-fill" wire:click="updateReservasi"
-                        @if (!$selectedKategori || !$selectedTipe || empty($selectedRepaints)) disabled @endif>
+                        @if (!$selectedKategori || !$selectedTipe || empty($selectedRepaints) || $showPaymentModal) disabled @endif>
                         <i class="bi bi-check-circle me-2"></i>Update Reservasi
                     </button>
                 </div>
@@ -278,7 +278,8 @@
     </div>
 
     {{-- Modal Pembayaran Tambahan --}}
-    <div wire:ignore.self class="modal fade" id="modalPembayaranTambahan" data-bs-backdrop="static" tabindex="-1">
+    <div wire:ignore.self class="modal fade" id="modalPembayaranTambahan" 
+         data-bs-backdrop="static" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -306,51 +307,81 @@
                     @endif
 
                     <div class="mb-3">
-                        @if ($existingPayment)
+                        @if ($additionalPayment > 0)
                             <p class="fw-bold h4">Pembayaran Tambahan:
                                 Rp{{ number_format($additionalPayment, 0, ',', '.') }}</p>
-                            <p>Anda telah melakukan pembayaran DP sebelumnya. Silakan bayar selisih untuk komponen
-                                tambahan:</p>
-                            <div class="alert alert-light">
+                            <p>Terjadi peningkatan harga setelah update reservasi. Silakan bayar selisih DP:</p>
+                            <div class="alert alert-info">
                                 <small>
-                                    <strong>Total Harga Sebelumnya:</strong>
-                                    Rp{{ number_format($originalTotalHarga, 0, ',', '.') }}<br>
-                                    <strong>Total Harga Baru:</strong>
-                                    Rp{{ number_format($totalHarga, 0, ',', '.') }}<br>
+                                    <strong>DP Awal (10%):</strong>
+                                    Rp{{ number_format($reservasi->original_dp_amount ?? ($originalTotalHarga * 0.1), 0, ',', '.') }}<br>
+                                    <strong>DP Baru (10%):</strong>
+                                    Rp{{ number_format($totalHarga * 0.1, 0, ',', '.') }}<br>
                                     <strong>Selisih yang harus dibayar:</strong>
                                     Rp{{ number_format($additionalPayment, 0, ',', '.') }}
                                 </small>
                             </div>
                         @else
-                            <p class="fw-bold h4">Total Pembayaran DP 10%:
-                                Rp{{ number_format($additionalPayment, 0, ',', '.') }}</p>
-                            <p>Silahkan transfer ke rekening:</p>
+                            <div class="alert alert-success">
+                                <p class="mb-0"><strong>Tidak ada pembayaran tambahan diperlukan!</strong></p>
+                                <small>Harga baru lebih rendah atau sama dengan harga sebelumnya.</small>
+                            </div>
                         @endif
-                        <ul>
-                            <li class="fw-bold">BCA: 1234567890 (A/N Hype Custom Project)</li>
-                        </ul>
+                        
+                        @if ($additionalPayment > 0)
+                            <ul>
+                                <li class="fw-bold">BCA: 1234567890 (A/N Hype Custom Project)</li>
+                            </ul>
+                        @endif
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label text-secondary">Upload Bukti Transfer</label>
-                        <input type="file" class="form-control @error('bukti_pembayaran') is-invalid @enderror"
-                            wire:model="bukti_pembayaran">
-                        @error('bukti_pembayaran')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
+                    @if ($additionalPayment > 0)
+                        <div class="mb-3">
+                            <label class="form-label text-secondary">Upload Bukti Transfer</label>
+                            <input type="file" class="form-control @error('bukti_pembayaran') is-invalid @enderror"
+                                wire:model="bukti_pembayaran">
+                            @error('bukti_pembayaran')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    @endif
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-                        wire:click="closePaymentModal">Batal</button>
-                    <button type="button" class="btn btn-primary fw-bold" wire:click="submitAdditionalPayment"
-                        @if ($additionalPayment <= 0) disabled @endif>
-                        Kirim Pembayaran
+                    <button type="button" class="btn btn-secondary" 
+                        onclick="closeModal()" wire:click="closePaymentModal">
+                        @if ($additionalPayment > 0) Batal @else Tutup @endif
                     </button>
+                    @if ($additionalPayment > 0)
+                        <button type="button" class="btn btn-primary fw-bold" wire:click="submitAdditionalPayment">
+                            Kirim Pembayaran
+                        </button>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
+    
+    {{-- Modal Backdrop --}}
+    @script
+        <script>
+            document.addEventListener('livewire:initialized', () => {
+                const modalElement = document.getElementById('modalPembayaranTambahan');
+                const modal = new bootstrap.Modal(modalElement);
+
+                @this.on('openPaymentModal', () => {
+                    modal.show();
+                });
+
+                @this.on('closePaymentModal', () => {
+                    modal.hide();
+                });
+
+                modalElement.addEventListener('hidden.bs.modal', () => {
+                    @this.dispatch('closePaymentModal');
+                });
+            });
+        </script>
+    @endscript
 </div>
 
 @push('styles')
@@ -439,11 +470,74 @@
                 }
             });
 
-                    // Handle payment modal
-        @this.on('openPaymentModal', () => {
-            const modal = new bootstrap.Modal(document.getElementById('modalPembayaranTambahan'));
-            modal.show();
-        });
+            // Handle payment modal via events
+            @this.on('openPaymentModal', () => {
+                showPaymentModal();
+            });
+
+            @this.on('show-payment-modal', () => {
+                console.log('Received show-payment-modal event');
+                showPaymentModal();
+            });
+
+            @this.on('modal-data', (data) => {
+                console.log('Modal data received:', data);
+                if (data.show) {
+                    showPaymentModal();
+                }
+            });
+
+            // Function to show modal
+            window.showPaymentModal = function() {
+                console.log('Attempting to show payment modal');
+                setTimeout(() => {
+                    const modalElement = document.getElementById('modalPembayaranTambahan');
+                    if (modalElement) {
+                        console.log('Modal element found, showing modal');
+                        const modal = new bootstrap.Modal(modalElement);
+                        modal.show();
+                    } else {
+                        console.error('Modal element not found');
+                    }
+                }, 150);
+            }
+
+            // Function to close modal
+            window.closeModal = function() {
+                const modalElement = document.getElementById('modalPembayaranTambahan');
+                if (modalElement) {
+                    const modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) {
+                        modal.hide();
+                    }
+                }
+            }
+
+            // Also watch for DOM updates
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'childList' || mutation.type === 'attributes') {
+                        const modalElement = document.getElementById('modalPembayaranTambahan');
+                        if (modalElement && modalElement.classList.contains('show') && modalElement.style.display === 'block') {
+                            // Modal should be shown but might not be visible
+                            const bootstrapModal = bootstrap.Modal.getOrCreateInstance(modalElement);
+                            if (!document.querySelector('.modal-backdrop')) {
+                                bootstrapModal.show();
+                            }
+                        }
+                    }
+                });
+            });
+
+            // Observe the modal element
+            const modalEl = document.getElementById('modalPembayaranTambahan');
+            if (modalEl) {
+                observer.observe(modalEl, { 
+                    attributes: true, 
+                    childList: true, 
+                    subtree: true 
+                });
+            }
         });
     </script>
 @endpush

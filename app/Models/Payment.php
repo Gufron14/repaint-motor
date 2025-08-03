@@ -14,11 +14,15 @@ class Payment extends Model
 
     protected $fillable = [
         'reservasi_id',
+        'amount',
+        'payment_type',
+        'description',
         'metode_pembayaran',
         'status_pembayaran',
         'bukti_pembayaran',
         'bukti_pengembalian',
-        'status_pengembalian'
+        'status_pengembalian',
+        'snap_token'
     ];
 
     public function reservasi()

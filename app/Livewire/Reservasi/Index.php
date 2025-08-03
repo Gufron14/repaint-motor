@@ -258,6 +258,8 @@ class Index extends Component
                 'nomor_polisi' => $this->nomor_polisi,
                 'catatan' => $this->catatan,
                 'total_harga' => $this->totalHarga,
+                'original_total_harga' => $this->totalHarga, // Simpan total harga awal
+                'original_dp_amount' => $this->dpHarga, // Simpan DP awal
                 'estimasi_waktu' => $this->estimasiWaktu,
                 'status' => 'pending',
             ]);
@@ -325,6 +327,9 @@ class Index extends Component
             // Simpan snap token ke database
             $payment = Payment::create([
                 'reservasi_id' => $reservasi->id,
+                'amount' => $this->dpHarga,
+                'payment_type' => 'dp',
+                'description' => 'DP Awal 10% dari total harga',
                 'metode_pembayaran' => 'midtrans',
                 'status_pembayaran' => 'pending',
                 'snap_token' => $snapToken,
@@ -378,8 +383,12 @@ class Index extends Component
             // Debug info
             Log::info('Creating payment with reservasi_id: ' . $this->reservasiId);
 
+            $reservasi = Reservasi::find($this->reservasiId);
             $payment = Payment::create([
                 'reservasi_id' => $this->reservasiId,
+                'amount' => $reservasi->original_dp_amount,
+                'payment_type' => 'dp',
+                'description' => 'DP Awal 10% dari total harga',
                 'metode_pembayaran' => 'transfer',
                 'status_pembayaran' => 'pending',
                 'bukti_pembayaran' => $filename,
