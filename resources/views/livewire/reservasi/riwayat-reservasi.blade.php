@@ -174,21 +174,14 @@
 
 @if (in_array($item->status, ['batal', 'tolak']))
     @php
-        $buktiPengembalian = optional($item->payment)->bukti_pembayaran;
+        $buktiPengembalian = optional($item->payment)->bukti_pengembalian;
     @endphp
 
     @if ($buktiPengembalian)
         {{-- Status batal/tolak dan ada bukti --}}
         <div class="alert alert-success text-center" role="alert">
             Permintaan telah <strong>{{ $item->status }}</strong>. Bukti Pengembalian Dana telah dikirim. Silakan lihat detailnya di bawah ini.
-        </div>
-
-        <div class="text-center mb-3">
-            <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal{{ $item->id }}">
-                <img src="{{ asset('storage/' . $buktiPengembalian) }}"
-                    alt="Bukti Pengembalian" class="img-thumbnail shadow"
-                    style="max-width: 200px;">
-            </a>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#imageModal{{ $item->id }}">Lihat Bukti Pengembalian</button>
         </div>
 
         <!-- Modal -->

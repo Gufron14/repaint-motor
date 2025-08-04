@@ -20,7 +20,6 @@ class Index extends Component
     public $reservasiIdToReject;
     public $showRejectModal = false;
     public $buktiPengembalian;
-    public $showRefundModal = []; // Tambahkan property ini
 
 
     public function updateStatus($reservasiId, $status)
@@ -34,13 +33,13 @@ class Index extends Component
 
     public function openRefundModal($reservasiId)
     {
-        $this->showRefundModal[$reservasiId] = true;
+        $this->dispatch('show-refund-modal', reservasiId: $reservasiId);
         $this->buktiPengembalian = null;
     }
 
     public function closeRefundModal($reservasiId)
     {
-        $this->showRefundModal[$reservasiId] = false;
+        $this->dispatch('hide-refund-modal', reservasiId: $reservasiId);
         $this->buktiPengembalian = null;
     }
 

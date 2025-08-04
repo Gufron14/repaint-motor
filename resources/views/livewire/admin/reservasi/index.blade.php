@@ -14,9 +14,9 @@
                     <th>Customer</th>
                     <th>Reservasi</th>
                     <th>Status Proses</th>
-                    @if (in_array($reservasi->first()?->status, ['tolak', 'batal']) && $reservasi->first()?->payment)
+                    {{-- @if (in_array($reservasi->first()?->status, ['tolak', 'batal']) && $reservasi->first()?->payment)
                         <th>Pengembalian Dana</th>
-                    @endif
+                    @endif --}}
                     <th>DP 10%</th>
                     <th>Aksi</th>
                 </tr>
@@ -74,7 +74,7 @@
                             @endif
 
                         </td>
-                        @if (in_array($item->status, ['tolak', 'batal']) && $item->payment)
+                        {{-- @if (in_array($item->status, ['tolak', 'batal']) && $item->payment)
                             <td class="align-middle">
                                 @if (!$item->payment->bukti_pengembalian)
                                     <span class="badge badge-danger">Belum Dikembalikan</span>
@@ -82,7 +82,7 @@
                                     <span class="badge badge-success">Dikembalikan</span>
                                 @endif
                             </td>
-                        @endif
+                        @endif --}}
 
                         <td class="align-middle">
                             @if ($item->payment && $item->payment->bukti_pembayaran)
@@ -94,16 +94,16 @@
                                 <span class="badge text-bg-warning">Belum Bayar</span>
                             @endif
                         </td>
-                        <td class="d-flex gap-1 justify-content-center align-items-center">
-                            @if (
-                                $item->status == 'tolak' && $item->payment && !$item->payment->bukti_pengembalian
-                                ||
-                                $item->status == 'batal' && $item->payment && !$item->payment->bukti_pengembalian
-                                )
-                                <button class="btn btn-sm btn-success"
-                                    wire:click="openRefundModal({{ $item->id }})">
-                                    Refund
-                                </button>
+                        <td class="d-flex gap-1 justify-content-end">
+@if (
+    in_array($item->status, ['tolak', 'batal']) &&
+    $item->payment &&
+    !$item->payment->bukti_pengembalian
+)
+    <button class="btn btn-sm btn-success"
+        wire:click="openRefundModal({{ $item->id }})">
+        Refund
+    </button>
                             @elseif (!in_array($item->status, ['tolak', 'batal', 'selesai']))
                                 {{-- Button Proses untuk status selain tolak, batal, selesai --}}
                                 <div class="dropdown">
@@ -262,74 +262,155 @@
                     </div>
 
                     {{-- Modal Kembalikan Uang - letakkan setelah modal rejectModal --}}
-                    @if ($item->status == 'tolak' && $item->payment)
-                        <div class="modal fade @if (isset($showRefundModal[$item->id]) && $showRefundModal[$item->id]) show @endif"
-                            id="refundModal{{ $item->id }}" tabindex="-1"
-                            @if (isset($showRefundModal[$item->id]) && $showRefundModal[$item->id]) style="display: block; background-color: rgba(0,0,0,0.5);" @endif>
-                            <div class="modal-dialog">
-                                <div class="modal-content" wire:ignore.self>
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Kembalikan Uang DP</h5>
-                                        <button type="button" class="btn-close"
-                                            wire:click="closeRefundModal({{ $item->id }})"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p class="mb-3">Upload bukti pengembalian uang DP untuk
-                                            <strong>{{ $item->user->name }}</strong> ke nomor rekening
-                                            &nbsp;<strong>{{ $item->user->no_rek }}</strong>
-                                        </p>
+{{-- Modal Kembalikan Uang --}}
+@if (in_array($item->status, ['tolak', 'batal']) && $item->payment)
+    <div class="modal fade" id="refundModal{{ $item->id }}" tabindex="-1"
+        aria-labelledby="refundModalLabel{{ $item->id }}" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Kembalikan Uang DP</h5>
+                    <button type="button" class="btn-close"
+                        wire:click="closeRefundModal({{ $item->id }})" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3">
+                        Upload bukti pengembalian uang DP untuk
+                        <strong>{{ $item->user->name }}</strong> ke nomor rekening
+                        <strong>{{ $item->user->no_rek }}</strong>
+                    </p>
 
-                                        <div class="alert alert-info">
-                                            <i class="fas fa-info-circle me-2"></i>
-                                            Jumlah yang harus dikembalikan (10% dari total harga):
-                                            <strong>Rp
-                                                {{ number_format(($item->total_harga ?? 0) * 0.1, 0, ',', '.') }}
-                                            </strong>
-                                        </div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Jumlah yang harus dikembalikan (10% dari total harga):
+                        <strong>Rp {{ number_format(($item->total_harga ?? 0) * 0.1, 0, ',', '.') }}</strong>
+                    </div>
 
-                                        <div class="mb-3">
-                                            <label class="form-label">Upload Bukti Transfer Pengembalian</label>
-                                            <input type="file" class="form-control"
-                                                wire:model.defer="buktiPengembalian" accept="image/*">
-                                            @error('buktiPengembalian')
-                                                <div class="text-danger mt-1">{{ $message }}</div>
-                                            @enderror
+                    <div class="mb-3">
+                        <label class="form-label">Upload Bukti Transfer Pengembalian</label>
+                        <input type="file" class="form-control"
+                            wire:model.defer="buktiPengembalian" accept="image/*">
+                        @error('buktiPengembalian')
+                            <div class="text-danger mt-1">{{ $message }}</div>
+                        @enderror
 
-                                            {{-- Loading indicator --}}
-                                            <div wire:loading wire:target="buktiPengembalian" class="mt-2">
-                                                <small class="text-info">
-                                                    <i class="fas fa-spinner fa-spin me-1"></i>
-                                                    Mengupload file...
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            wire:click="closeRefundModal({{ $item->id }})">
-                                            Batal
-                                        </button>
-                                        <button type="button" class="btn btn-success"
-                                            wire:click="uploadBuktiPengembalian({{ $item->id }})"
-                                            wire:loading.attr="disabled" wire:target="buktiPengembalian">
-                                            <i class="fas fa-upload me-1"></i>
-                                            Upload Bukti
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                        {{-- Loading indicator --}}
+                        <div wire:loading wire:target="buktiPengembalian" class="mt-2">
+                            <small class="text-info">
+                                <i class="fas fa-spinner fa-spin me-1"></i>
+                                Mengupload file...
+                            </small>
                         </div>
-                    @endif
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                        wire:click="closeRefundModal({{ $item->id }})" data-bs-dismiss="modal">
+                        Batal
+                    </button>
+                    <button type="button" class="btn btn-primary"
+                        wire:click="uploadBuktiPengembalian({{ $item->id }})"
+                        wire:loading.attr="disabled" wire:target="buktiPengembalian">
+                        <span wire:loading.remove wire:target="buktiPengembalian">Upload Bukti</span>
+                        <span wire:loading wire:target="buktiPengembalian">
+                            <span class="spinner-border spinner-border-sm" role="status"
+                                aria-hidden="true"></span>
+                            Uploading...
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
 
                 @empty
                     <tr>
-                        <td colspan="10" class="p-4 text-center text-danger fs-5">
-                            <i class="far fa-times-circle me-2"></i>
-                            Belum ada Data
-                        </td>
+                        <td colspan="8" class="text-center">Tidak ada data reservasi.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
+
+    {{-- Modal Tolak Reservasi --}}
+    <div wire:ignore.self class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rejectModalLabel">Tolak Reservasi</h5>
+                    <button type="button" class="btn-close" wire:click="closeRejectModal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3">Pilih alasan penolakan reservasi untuk
+                        <strong>{{ $reservasiIdToReject ? $reservasi->find($reservasiIdToReject)->user->name : '' }}</strong>:
+                    </p>
+
+                    @error('selectedPenolakanId')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
+
+                    <div class="form-group">
+                        @foreach ($alasanPenolakan->where('tipe', 'admin') as $penolakan)
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="radio" wire:model="selectedPenolakanId"
+                                    value="{{ $penolakan->id }}" name="penolakan"
+                                    id="penolakan{{ $penolakan->id }}">
+                                <label class="form-check-label" for="penolakan{{ $penolakan->id }}">
+                                    {{ $penolakan->keterangan }}
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" wire:click="closeRejectModal">
+                        Batal
+                    </button>
+                    <button type="button" class="btn btn-danger"
+                        wire:click="rejectReservasi({{ $reservasiIdToReject }})"
+                        wire:confirm="Yakin ingin menolak reservasi ini?">
+                        <i class="fas fa-times me-1"></i>
+                        Tolak Reservasi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+@push('scripts')
+<script>
+    document.addEventListener('livewire:initialized', () => {
+        // Refund Modal listener
+        Livewire.on('show-refund-modal', (data) => {
+            const reservasiId = data.reservasiId;
+            const modalId = `refundModal${reservasiId}`;
+            const modalEl = document.getElementById(modalId);
+
+            console.log('Opening Refund Modal:', modalId);
+
+            if (modalEl) {
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            } else {
+                console.warn('Refund modal not found:', modalId);
+            }
+        });
+
+        Livewire.on('hide-refund-modal', (data) => {
+            const reservasiId = data.reservasiId;
+            const modalEl = document.getElementById(`refundModal${reservasiId}`);
+            if (modalEl) {
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) {
+                    modal.hide();
+                }
+            }
+        });
+    });
+</script>
+@endpush
+
 </div>
