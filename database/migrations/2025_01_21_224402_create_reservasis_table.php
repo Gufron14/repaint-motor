@@ -18,14 +18,18 @@ return new class extends Migration
             $table->foreignId('tipe_motor_id')->constrained()->onDelete('cascade'); // Relasi ke tipe motor
             $table->json('jenis_repaint_id')->constrained()->onDelete('cascade'); // Relasi ke jenis repaint
             $table->foreignId('penolakan_id')->nullable()->constrained('penolakans')->onDelete('cascade');
-            $table->string('warna_body', 7)->nullable();
-            $table->string('warna_velg', 7)->nullable();
-            $table->string('warna_knalpot', 7)->nullable();
-            $table->string('warna_cvt', 7)->nullable();
+
+            // Relasi ke tabel warnas
+            $table->foreignId('warna_body_id')->nullable()->constrained('warnas')->onDelete('set null');
+            $table->foreignId('warna_velg_id')->nullable()->constrained('warnas')->onDelete('set null');
+            $table->foreignId('warna_knalpot_id')->nullable()->constrained('warnas')->onDelete('set null');
+            $table->foreignId('warna_cvt_id')->nullable()->constrained('warnas')->onDelete('set null');
+
             $table->string('foto_motor')->nullable();
             $table->string('foto_velg')->nullable();
             $table->string('foto_knalpot')->nullable();
             $table->string('foto_cvt')->nullable();
+
             $table->string('nomor_polisi');
             $table->string('catatan')->nullable();
             $table->decimal('total_harga', 10, 2); // Total harga yang dihitung

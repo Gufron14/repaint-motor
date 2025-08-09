@@ -148,42 +148,185 @@
                         Repaint</label>
                 @endif
 
-                <div class="d-flex gap-5 mb-3">
-                    @if (in_array('1', $selectedRepaints) || in_array('2', $selectedRepaints) || in_array('3', $selectedRepaints))
-                        <div class="d-flex gap-3">
-                            <label for="warna_body" class="form-label text-secondary">Warna Body:</label>
-                            <input type="color" name="warna_body" id="warna_body" wire:model='warna_body'
-                                value="#CCCCCC" title="Pilih Warna">
-                        </div>
-                    @endif
-                    @if (in_array('4', $selectedRepaints))
-                        <div class="d-flex gap-3">
-                            <label for="warna_velg" class="form-label text-secondary">Warna Velg:</label>
-                            <input type="color" name="warna_velg" id="warna_velg" wire:model='warna_velg'
-                                value="#CCCCCC" title="Pilih Warna">
-                        </div>
-                    @endif
-                    @if (in_array('5', $selectedRepaints))
-                        <div class="d-flex gap-3">
-                            <label for="warna_knalpot" class="form-label text-secondary">Warna Knalpot:</label>
-                            <input type="color" name="warna_knalpot" id="warna_knalpot" wire:model='warna_knalpot'
-                                value="#CCCCCC" title="Pilih Warna">
-                        </div>
-                    @endif
-                    @if (in_array('6', $selectedRepaints))
-                        <div class="d-flex gap-3">
-                            <label for="warna_cvt" class="form-label text-secondary">Warna CVT:</label>
-                            <input type="color" name="warna_cvt" id="warna_cvt" wire:model='warna_cvt'
-                                value="#CCCCCC" title="Pilih Warna">
-                        </div>
-                    @endif
-                </div>
-                @if ($selectedRepaints)
-                    <p class="fst-italic text-danger"><i class="bi bi-info-circle me-2"></i>Untuk keakuratan
-                        warna,
-                        tulis warna
-                        lengkap pada Catatan.</p>
-                @endif
+               {{-- Pemilihan Warna untuk Body (Full Body, Body Halus, Body Kasar) --}}
+               @if (in_array('1', $selectedRepaints) || in_array('2', $selectedRepaints) || in_array('3', $selectedRepaints))
+                   <div class="mb-4 p-3 border rounded">
+                       <h6 class="fw-bold text-secondary mb-3">PILIH WARNA BODY</h6>
+                       
+                       <div class="row mb-3">
+                           <div class="col-md-4">
+                               <label class="form-label text-secondary">Nama Warna Body:</label>
+                                <select class="form-select" wire:model.live="selectedNamaWarna.body">
+                                    <option value="">-- Pilih Nama Warna --</option>
+                                    @foreach ($availableNamaWarna as $namaWarna)
+                                        <option value="{{ $namaWarna }}">{{ $namaWarna }}</option>
+                                    @endforeach
+                                </select>
+                           </div>
+                           
+                           <div class="col-md-4">
+                               <label class="form-label text-secondary">Jenis Warna Body:</label>
+                               <select class="form-select" wire:model.live="selectedJenisWarna.body" 
+                                       @if(!isset($selectedNamaWarna['body']) || !$selectedNamaWarna['body']) disabled @endif>
+                                   <option value="">-- Pilih Jenis Warna --</option>
+                                   @if(isset($availableJenisWarna['body']))
+                                       @foreach ($availableJenisWarna['body'] as $jenis)
+                                           <option value="{{ $jenis->jenis_warna }}">{{ $jenis->jenis_warna }}</option>
+                                       @endforeach
+                                   @endif
+                               </select>
+                           </div>
+                           
+                           <div class="col-md-4">
+                               <label class="form-label text-secondary">Preview Warna:</label>
+                               <div class="d-flex align-items-center">
+                                   @if(isset($selectedWarna['body']) && $selectedWarna['body'])
+                                       <div style="width: 50px; height: 50px; background-color: {{ $selectedWarna['body']->kode_hex }}; border: 2px solid #ccc; border-radius: 8px; margin-right: 10px;"></div>
+                                       <span class="text-muted">{{ $selectedWarna['body']->kode_hex }}</span>
+                                   @else
+                                       <div style="width: 50px; height: 50px; background-color: #f8f9fa; border: 2px solid #ccc; border-radius: 8px; margin-right: 10px;"></div>
+                                       <span class="text-muted">Belum dipilih</span>
+                                   @endif
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               @endif
+
+               {{-- Pemilihan Warna untuk Velg --}}
+               @if (in_array('4', $selectedRepaints))
+                   <div class="mb-4 p-3 border rounded">
+                       <h6 class="fw-bold text-secondary mb-3">PILIH WARNA VELG</h6>
+                       
+                       <div class="row mb-3">
+                           <div class="col-md-4">
+                               <label class="form-label text-secondary">Nama Warna Velg:</label>
+<select class="form-select" wire:model.live="selectedNamaWarna.velg">
+    <option value="">-- Pilih Nama Warna --</option>
+    @foreach ($availableNamaWarna as $namaWarna)
+        <option value="{{ $namaWarna }}">{{ $namaWarna }}</option>
+    @endforeach
+</select>
+                           </div>
+                           
+                           <div class="col-md-4">
+                               <label class="form-label text-secondary">Jenis Warna Velg:</label>
+                               <select class="form-select" wire:model.live="selectedJenisWarna.velg" 
+                                       @if(!isset($selectedNamaWarna['velg']) || !$selectedNamaWarna['velg']) disabled @endif>
+                                   <option value="">-- Pilih Jenis Warna --</option>
+                                   @if(isset($availableJenisWarna['velg']))
+                                       @foreach ($availableJenisWarna['velg'] as $jenis)
+                                           <option value="{{ $jenis->jenis_warna }}">{{ $jenis->jenis_warna }}</option>
+                                       @endforeach
+                                   @endif
+                               </select>
+                           </div>
+                           
+                           <div class="col-md-4">
+                               <label class="form-label text-secondary">Preview Warna:</label>
+                               <div class="d-flex align-items-center">
+                                   @if(isset($selectedWarna['velg']) && $selectedWarna['velg'])
+                                       <div style="width: 50px; height: 50px; background-color: {{ $selectedWarna['velg']->kode_hex }}; border: 2px solid #ccc; border-radius: 8px; margin-right: 10px;"></div>
+                                       <span class="text-muted">{{ $selectedWarna['velg']->kode_hex }}</span>
+                                   @else
+                                       <div style="width: 50px; height: 50px; background-color: #f8f9fa; border: 2px solid #ccc; border-radius: 8px; margin-right: 10px;"></div>
+                                       <span class="text-muted">Belum dipilih</span>
+                                   @endif
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               @endif
+
+               {{-- Pemilihan Warna untuk Knalpot --}}
+               @if (in_array('5', $selectedRepaints))
+                   <div class="mb-4 p-3 border rounded">
+                       <h6 class="fw-bold text-secondary mb-3">PILIH WARNA KNALPOT</h6>
+                       
+                       <div class="row mb-3">
+                           <div class="col-md-4">
+                               <label class="form-label text-secondary">Nama Warna Knalpot:</label>
+<select class="form-select" wire:model.live="selectedNamaWarna.knalpot">
+    <option value="">-- Pilih Nama Warna --</option>
+    @foreach ($availableNamaWarna as $namaWarna)
+        <option value="{{ $namaWarna }}">{{ $namaWarna }}</option>
+    @endforeach
+</select>
+                           </div>
+                           
+                           <div class="col-md-4">
+                               <label class="form-label text-secondary">Jenis Warna Knalpot:</label>
+                               <select class="form-select" wire:model.live="selectedJenisWarna.knalpot" 
+                                       @if(!isset($selectedNamaWarna['knalpot']) || !$selectedNamaWarna['knalpot']) disabled @endif>
+                                   <option value="">-- Pilih Jenis Warna --</option>
+                                   @if(isset($availableJenisWarna['knalpot']))
+                                       @foreach ($availableJenisWarna['knalpot'] as $jenis)
+                                           <option value="{{ $jenis->jenis_warna }}">{{ $jenis->jenis_warna }}</option>
+                                       @endforeach
+                                   @endif
+                               </select>
+                           </div>
+                           
+                           <div class="col-md-4">
+                               <label class="form-label text-secondary">Preview Warna:</label>
+                               <div class="d-flex align-items-center">
+                                   @if(isset($selectedWarna['knalpot']) && $selectedWarna['knalpot'])
+                                       <div style="width: 50px; height: 50px; background-color: {{ $selectedWarna['knalpot']->kode_hex }}; border: 2px solid #ccc; border-radius: 8px; margin-right: 10px;"></div>
+                                       <span class="text-muted">{{ $selectedWarna['knalpot']->kode_hex }}</span>
+                                   @else
+                                       <div style="width: 50px; height: 50px; background-color: #f8f9fa; border: 2px solid #ccc; border-radius: 8px; margin-right: 10px;"></div>
+                                       <span class="text-muted">Belum dipilih</span>
+                                   @endif
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               @endif
+
+               {{-- Pemilihan Warna untuk CVT --}}
+               @if (in_array('6', $selectedRepaints))
+                   <div class="mb-4 p-3 border rounded">
+                       <h6 class="fw-bold text-secondary mb-3">PILIH WARNA CVT</h6>
+                       
+                       <div class="row mb-3">
+                           <div class="col-md-4">
+                               <label class="form-label text-secondary">Nama Warna CVT:</label>
+<select class="form-select" wire:model.live="selectedNamaWarna.cvt">
+    <option value="">-- Pilih Nama Warna --</option>
+    @foreach ($availableNamaWarna as $namaWarna)
+        <option value="{{ $namaWarna }}">{{ $namaWarna }}</option>
+    @endforeach
+</select>
+                           </div>
+                           
+                           <div class="col-md-4">
+                               <label class="form-label text-secondary">Jenis Warna CVT:</label>
+                               <select class="form-select" wire:model.live="selectedJenisWarna.cvt" 
+                                       @if(!isset($selectedNamaWarna['cvt']) || !$selectedNamaWarna['cvt']) disabled @endif>
+                                   <option value="">-- Pilih Jenis Warna --</option>
+                                   @if(isset($availableJenisWarna['cvt']))
+                                       @foreach ($availableJenisWarna['cvt'] as $jenis)
+                                           <option value="{{ $jenis->jenis_warna }}">{{ $jenis->jenis_warna }}</option>
+                                       @endforeach
+                                   @endif
+                               </select>
+                           </div>
+                           
+                           <div class="col-md-4">
+                               <label class="form-label text-secondary">Preview Warna:</label>
+                               <div class="d-flex align-items-center">
+                                   @if(isset($selectedWarna['cvt']) && $selectedWarna['cvt'])
+                                       <div style="width: 50px; height: 50px; background-color: {{ $selectedWarna['cvt']->kode_hex }}; border: 2px solid #ccc; border-radius: 8px; margin-right: 10px;"></div>
+                                       <span class="text-muted">{{ $selectedWarna['cvt']->kode_hex }}</span>
+                                   @else
+                                       <div style="width: 50px; height: 50px; background-color: #f8f9fa; border: 2px solid #ccc; border-radius: 8px; margin-right: 10px;"></div>
+                                       <span class="text-muted">Belum dipilih</span>
+                                   @endif
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               @endif
 
 
                 <div class="col">
@@ -296,11 +439,11 @@
                         </div>
                     @endif
                     
-                   {{-- @if (session()->has('error'))
+                   @if (session()->has('error'))
                         <div class="alert alert-danger">
                             {{ session('error') }}
                         </div>
-                    @endif --}}
+                    @endif
                     
                     <!-- Debug info untuk development -->
                     @if (app()->environment('local'))

@@ -10,6 +10,7 @@ use App\Models\TipeMotor;
 use App\Models\JenisRepaint;
 use App\Models\MotorRepaint;
 use App\Models\KategoriMotor;
+use App\Models\Warna;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\Log;
@@ -27,10 +28,17 @@ class Index extends Component
     public $selectedKategori = null;
     public $selectedTipe = null;
     public $selectedRepaints = [];
-    public $warna_body;
-    public $warna_velg;
-    public $warna_knalpot;
-    public $warna_cvt;
+    public $warna_body_id;
+    public $warna_velg_id;
+    public $warna_knalpot_id;
+    public $warna_cvt_id;
+
+    // Data untuk warna
+    public $availableNamaWarna = [];
+    public $selectedNamaWarna = [];
+    public $availableJenisWarna = [];
+    public $selectedJenisWarna = [];
+    public $selectedWarna = [];
     public $foto_motor;
     public $foto_velg;
     public $foto_knalpot;
@@ -68,6 +76,7 @@ class Index extends Component
     {
         $this->kategoriMotor = KategoriMotor::all();
         $this->jenisRepaint = JenisRepaint::all();
+        $this->availableNamaWarna = Warna::pluck('nama_warna')->unique()->toArray();
     }
 
     public function resetForm()
@@ -78,6 +87,19 @@ class Index extends Component
         $this->totalHarga = 0;
         $this->estimasiWaktu = 0;
         $this->tipeMotor = [];
+        $this->resetWarna();
+    }
+
+    public function resetWarna()
+    {
+        $this->selectedNamaWarna = [];
+        $this->availableJenisWarna = [];
+        $this->selectedJenisWarna = [];
+        $this->selectedWarna = [];
+        $this->warna_body_id = null;
+        $this->warna_velg_id = null;
+        $this->warna_knalpot_id = null;
+        $this->warna_cvt_id = null;
     }
 
     public function updatedSelectedKategori($value)
@@ -155,6 +177,50 @@ class Index extends Component
         }
 
         $this->calculateTotal();
+        $this->resetWarna();
+    }
+
+    // Method untuk menangani perubahan nama warna
+    public function updatedSelectedNamaWarna($value, $type)
+    {
+        if ($value) {
+            $this->availableJenisWarna[$type] = Warna::where('nama_warna', $value)->get(['jenis_warna', 'kode_hex']);
+        } else {
+            $this->availableJenisWarna[$type] = [];
+            $this->selectedJenisWarna[$type] = null;
+            $this->selectedKodeHex[$type] = null;
+        }
+    }
+
+    // Method untuk menangani perubahan jenis warna
+    public function updatedSelectedJenisWarna($value, $type)
+    {
+        if ($value && isset($this->selectedNamaWarna[$type])) {
+            $warna = Warna::where('nama_warna', $this->selectedNamaWarna[$type])
+                          ->where('jenis_warna', $value)
+                          ->first();
+            
+            if ($warna) {
+                $this->selectedWarna[$type] = $warna;
+                // Set warna_id sesuai tipe
+                switch($type) {
+                    case 'body':
+                        $this->warna_body_id = $warna->id;
+                        break;
+                    case 'velg':
+                        $this->warna_velg_id = $warna->id;
+                        break;
+                    case 'knalpot':
+                        $this->warna_knalpot_id = $warna->id;
+                        break;
+                    case 'cvt':
+                        $this->warna_cvt_id = $warna->id;
+                        break;
+                }
+            }
+        } else {
+            $this->selectedWarna[$type] = null;
+        }
     }
 
     public function calculateTotal()
@@ -206,10 +272,10 @@ class Index extends Component
                 'selectedKategori' => 'required',
                 'selectedTipe' => 'required',
                 'selectedRepaints' => 'required|array|min:1|max:4',
-                'warna_body' => 'nullable',
-                'warna_velg' => 'nullable',
-                'warna_knalpot' => 'nullable',
-                'warna_cvt' => 'nullable',
+                'warna_body_id' => 'nullable',
+                'warna_velg_id' => 'nullable',
+                'warna_knalpot_id' => 'nullable',
+                'warna_cvt_id' => 'nullable',
                 'foto_motor' => 'nullable|image|max:1024',
                 'foto_velg' => 'nullable|image|max:1024',
                 'foto_knalpot' => 'nullable|image|max:1024',
@@ -247,10 +313,10 @@ class Index extends Component
                 'kategori_motor_id' => $this->selectedKategori,
                 'tipe_motor_id' => $this->selectedTipe,
                 'jenis_repaint_id' => $this->selectedRepaints,
-                'warna_body' => $this->warna_body,
-                'warna_velg' => $this->warna_velg,
-                'warna_knalpot' => $this->warna_knalpot,
-                'warna_cvt' => $this->warna_cvt,
+                'warna_body_id' => $this->warna_body_id,
+                'warna_velg_id' => $this->warna_velg_id,
+                'warna_knalpot_id' => $this->warna_knalpot_id,
+                'warna_cvt_id' => $this->warna_cvt_id,
                 'foto_motor' => $foto_motor_path,
                 'foto_velg' => $foto_velg_path,
                 'foto_knalpot' => $foto_knalpot_path,
@@ -258,8 +324,6 @@ class Index extends Component
                 'nomor_polisi' => $this->nomor_polisi,
                 'catatan' => $this->catatan,
                 'total_harga' => $this->totalHarga,
-                'original_total_harga' => $this->totalHarga, // Simpan total harga awal
-                'original_dp_amount' => $this->dpHarga, // Simpan DP awal
                 'estimasi_waktu' => $this->estimasiWaktu,
                 'status' => 'pending',
             ]);
@@ -386,7 +450,7 @@ class Index extends Component
             $reservasi = Reservasi::find($this->reservasiId);
             $payment = Payment::create([
                 'reservasi_id' => $this->reservasiId,
-                'amount' => $reservasi->original_dp_amount,
+                'amount' => $this->dpHarga,
                 'payment_type' => 'dp',
                 'description' => 'DP Awal 10% dari total harga',
                 'metode_pembayaran' => 'transfer',

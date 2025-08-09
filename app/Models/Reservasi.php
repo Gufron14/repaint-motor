@@ -25,10 +25,10 @@ class Reservasi extends Model
         'tipe_motor_id',
         'jenis_repaint_id',
         'penolakan_id',
-        'warna_body',
-        'warna_velg',
-        'warna_knalpot',
-        'warna_cvt',
+        'warna_body_id',
+        'warna_velg_id',
+        'warna_knalpot_id',
+        'warna_cvt_id',
         'foto_motor',
         'foto_velg',
         'foto_knalpot',
@@ -36,12 +36,8 @@ class Reservasi extends Model
         'nomor_polisi',
         'catatan',
         'total_harga',
-        'original_total_harga',
-        'original_dp_amount',
         'estimasi_waktu',
-        'status',
-        'status_bayar'
-        
+        'status'
     ];
     
 
@@ -120,5 +116,26 @@ class Reservasi extends Model
             ->where('payment_type', 'additional')
             ->where('status_pembayaran', 'berhasil')
             ->sum('amount');
+    }
+
+    // Relasi ke Warna berdasarkan foreign key
+    public function warnaBody()
+    {
+        return $this->belongsTo(Warna::class, 'warna_body_id');
+    }
+
+    public function warnaVelg()
+    {
+        return $this->belongsTo(Warna::class, 'warna_velg_id');
+    }
+
+    public function warnaKnalpot()
+    {
+        return $this->belongsTo(Warna::class, 'warna_knalpot_id');
+    }
+
+    public function warnaCvt()
+    {
+        return $this->belongsTo(Warna::class, 'warna_cvt_id');
     }
 }

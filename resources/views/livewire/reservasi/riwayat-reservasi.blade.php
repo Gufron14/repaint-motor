@@ -214,29 +214,30 @@
 
                 </div>
 
-                @php
-                    $warnaList = [
-                        'Body' => $item->warna_body ?? null,
-                        'Velg' => $item->warna_velg ?? null,
-                        'Knalpot' => $item->warna_knalpot ?? null,
-                        'CVT' => $item->warna_cvt ?? null,
-                    ];
-                @endphp
+    @php
+        $warnaKomponen = [
+            'Body' => $item->warnaBody,
+            'Velg' => $item->warnaVelg,
+            'Knalpot' => $item->warnaKnalpot,
+            'CVT' => $item->warnaCvt,
+        ];
+    @endphp
 
                 <div class="d-flex gap-3 justify-content-center mb-4">
-                    @foreach ($warnaList as $label => $warna)
-                        @if ($warna)
-                            <div class="card w-100">
-                                <div class="d-flex align-items-center justify-content-center text-white"
-                                    style="height: 200px; background-color: {{ $warna }}">
-                                    <div class="text-center p-3">
-                                        <small class="opacity-75">Warna {{ $label }}</small>
-                                        <h5 class="mb-0 fw-bold text-uppercase">{{ $warna }}</h5>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
-                    @endforeach
+    @foreach ($warnaKomponen as $label => $warna)
+        @if ($warna)
+            <div class="card w-100">
+                <div class="d-flex align-items-center justify-content-center text-white"
+                    style="height: 200px; background-color: {{ $warna->kode_hex }}">
+                    <div class="text-center p-3">
+                        <small class="opacity-75">Warna {{ $label }}</small>
+                        <h5 class="mb-0 fw-bold text-uppercase">{{ $warna->nama_warna }} {{ $warna->jenis_warna }}</h5>
+                        <span class="badge bg-light text-dark mt-2">{{ $warna->kode_hex }}</span>
+                    </div>
+                </div>
+            </div>
+        @endif
+    @endforeach
                 </div>
 
                 <div class="d-flex mb-3 gap-2 align-items-center">
