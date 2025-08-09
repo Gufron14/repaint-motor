@@ -104,58 +104,49 @@
 
 
 
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h5 class="border-bottom pb-2">Warna yang Dipilih</h5>
-                    <div class="d-flex gap-4">
-                        @if ($reservasi->warna_body)
-                            <div>
-                                <label>Warna Body:</label>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div
-                                        style="width: 30px; height: 30px; background-color: {{ $reservasi->warna_body }}; border: 1px solid #ddd; border-radius: 4px;">
-                                    </div>
-                                    <span class="text-uppercase">{{ $reservasi->warna_body }}</span>
-                                </div>
-                            </div>
-                        @endif
-
-                        @if ($reservasi->warna_velg)
-                            <div>
-                                <label>Warna Velg:</label>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div
-                                        style="width: 30px; height: 30px; background-color: {{ $reservasi->warna_velg }}; border: 1px solid #ddd; border-radius: 4px;">
-                                    </div>
-                                    <span class="text-uppercase">{{ $reservasi->warna_velg }}</span>
-                                </div>
-                            </div>
-                        @endif
-                        @if ($reservasi->warna_velg)
-                            <div>
-                                <label>Warna Knalpot:</label>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div
-                                        style="width: 30px; height: 30px; background-color: {{ $reservasi->warna_knalpot }}; border: 1px solid #ddd; border-radius: 4px;">
-                                    </div>
-                                    <span class="text-uppercase">{{ $reservasi->warna_knalpot }}</span>
-                                </div>
-                            </div>
-                        @endif
-                        @if ($reservasi->warna_cvt)
-                            <div>
-                                <label>Warna CVT:</label>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div
-                                        style="width: 30px; height: 30px; background-color: {{ $reservasi->warna_cvt }}; border: 1px solid #ddd; border-radius: 4px;">
-                                    </div>
-                                    <span class="text-uppercase">{{ $reservasi->warna_cvt }}</span>
-                                </div>
-                            </div>
-                        @endif
+<div class="row mb-4">
+    <div class="col-12">
+        <h5 class="border-bottom pb-2">Warna yang Dipilih</h5>
+        <div class="d-flex gap-4">
+            @if ($reservasi->warnaBody)
+                <div>
+                    <label>Warna Body:</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <div style="width: 30px; height: 30px; background-color: {{ $reservasi->warnaBody->kode_hex }}; border: 1px solid #ddd; border-radius: 4px;"></div>
+                        <span class="text-uppercase">{{ $reservasi->warnaBody->nama_warna }} {{ $reservasi->warnaBody->jenis_warna }} ({{ $reservasi->warnaBody->kode_hex }})</span>
                     </div>
                 </div>
-            </div>
+            @endif
+            @if ($reservasi->warnaVelg)
+                <div>
+                    <label>Warna Velg:</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <div style="width: 30px; height: 30px; background-color: {{ $reservasi->warnaVelg->kode_hex }}; border: 1px solid #ddd; border-radius: 4px;"></div>
+                        <span class="text-uppercase">{{ $reservasi->warnaVelg->nama_warna }} {{ $reservasi->warnaVelg->jenis_warna }} ({{ $reservasi->warnaVelg->kode_hex }})</span>
+                    </div>
+                </div>
+            @endif
+            @if ($reservasi->warnaKnalpot)
+                <div>
+                    <label>Warna Knalpot:</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <div style="width: 30px; height: 30px; background-color: {{ $reservasi->warnaKnalpot->kode_hex }}; border: 1px solid #ddd; border-radius: 4px;"></div>
+                        <span class="text-uppercase">{{ $reservasi->warnaKnalpot->nama_warna }} {{ $reservasi->warnaKnalpot>jenis_warna }} ({{ $reservasi->warnaKnalpot->kode_hex }})</span>
+                    </div>
+                </div>
+            @endif
+            @if ($reservasi->warnaCvt)
+                <div>
+                    <label>Warna CVT:</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <div style="width: 30px; height: 30px; background-color: {{ $reservasi->warnaCvt->kode_hex }}; border: 1px solid #ddd; border-radius: 4px;"></div>
+                        <span class="text-uppercase">{{ $reservasi->warnaCvt->nama_warna }} {{ $reservasi->warnaCvt->jenis_warna }} ({{ $reservasi->warnaCvt->kode_hex }})</span>
+                    </div>
+                </div>
+            @endif
+        </div>
+    </div>
+</div>
 
             <div class="row mb-4">
                 <div class="col-12">
